@@ -99,8 +99,8 @@ namespace NFSLibrary.Protocols.Commons
             for (int bC = 0; bC < Handle.Length; bC++)
             { HandleString.Append(((Byte)Handle.GetValue(bC)).ToString("X")); }
 
-            return String.Format("CDateTime: {0}, ADateTime: {1}, MDateTime: {2}, Type: {3}, Mode: {4}{5}{6}, Size: {7}, Handle: {8}",
-                        CreateDateTime.ToString(), LastAccessedDateTime.ToString(), ModifiedDateTime.ToString(), NFSType.ToString(), Mode.UserAccess, Mode.GroupAccess, Mode.OtherAccess, Size, HandleString.ToString());
+            return
+                $"CDateTime: {CreateDateTime}, ADateTime: {LastAccessedDateTime}, MDateTime: {ModifiedDateTime}, Type: {NFSType}, Mode: {Mode.UserAccess}{Mode.GroupAccess}{Mode.OtherAccess}, Size: {Size}, Handle: {HandleString}";
         }
     }
 }

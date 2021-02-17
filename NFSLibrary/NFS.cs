@@ -4,48 +4,51 @@ using NFSLibrary.Protocols.V3;
 using NFSLibrary.Protocols.V4;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using static System.String;
 
 namespace NFSLibrary
 {
     /// <summary>
     /// NFS Client Library
     /// </summary>
-    public class NFSClient
+    public class NfsClient
     {
         #region Enum
 
         /// <summary>
         /// The NFS version to use
         /// </summary>
-        public enum NFSVersion
+        public enum NfsVersion
         {
             /// <summary>
             /// NFS Version 2
             /// </summary>
-            v2 = 2,
+            V2 = 2,
 
             /// <summary>
             /// NFS Version 3
             /// </summary>
-            v3 = 3,
+            V3 = 3,
 
             /// <summary>
             /// NFS Version 4.1
             /// </summary>
-            v4 = 4
+            V4 = 4
         }
 
         #endregion Enum
 
         #region Fields
 
-        private NFSPermission _Mode = null;
-        private bool _IsMounted = false;
-        private bool _IsConnected = false;
-        private string _CurrentDirectory = string.Empty;
+        private NFSPermission _mode;
+        private bool _isMounted;
+        private bool _isConnected;
+        private readonly string _currentDirectory = Empty;
 
-        private INFS _nfsInterface = null;
+        private readonly INFS _nfsInterface;
+
         /* Block size must not be greater than 8064 for V2 and
          * 8000 for V3. RPC Buffer size is fixed to 8192, when
          * requesting on RPC, 8192 bytes contain every details
@@ -53,32 +56,28 @@ namespace NFSLibrary
          * of V2 and 192 bytes for header information of V3.
          * V2: 8064 bytes for data.
          * V3: 8000 bytes for data. */
-        public int _blockSize = 7900;
+        public int blockSize = 7900;
         //this can change
 
         #endregion Fields
 
         #region Events
 
-        public delegate void NFSDataEventHandler(object sender, NFSEventArgs e);
+        public delegate void NfsDataEventHandler(object sender, NfsEventArgs e);
 
         /// <summary>
         /// This event is fired when data is transferred from/to the server
         /// </summary>
-        public event NFSDataEventHandler DataEvent = null;
+        public event NfsDataEventHandler DataEvent;
 
-        public class NFSEventArgs : EventArgs
+        public class NfsEventArgs : EventArgs
         {
-            private int _Bytes;
-
-            public NFSEventArgs(int Bytes)
-            { this._Bytes = Bytes; }
-
-            public int Bytes
+            public NfsEventArgs(int bytes)
             {
-                get
-                { return this._Bytes; }
+                Bytes = bytes;
             }
+
+            public int Bytes { get; }
         }
 
         #endregion Events
@@ -88,45 +87,26 @@ namespace NFSLibrary
         /// <summary>
         /// This property tells if the current export is mounted
         /// </summary>
-        public bool IsMounted
-        {
-            get
-            { return this._IsMounted; }
-        }
+        public bool IsMounted => _isMounted;
 
         /// <summary>
         /// This property tells if the connection is active
         /// </summary>
-        public bool IsConnected
-        {
-            get
-            { return this._IsConnected; }
-        }
+        public bool IsConnected => _isConnected;
 
         /// <summary>
         /// This property allow you to set file/folder access permissions
         /// </summary>
         public NFSPermission Mode
         {
-            get
-            {
-                if (this._Mode == null)
-                { this._Mode = new NFSPermission(7, 7, 7); }
-
-                return this._Mode;
-            }
-            set
-            { this._Mode = value; }
+            get => _mode ??= new NFSPermission(7, 7, 7);
+            set => _mode = value;
         }
 
         /// <summary>
         /// This property contains the current server directory
         /// </summary>
-        public String CurrentDirectory
-        {
-            get
-            { return this._CurrentDirectory; }
-        }
+        public string CurrentDirectory => _currentDirectory;
 
         #endregion Properties
 
@@ -135,21 +115,21 @@ namespace NFSLibrary
         /// <summary>
         /// NFS Client Constructor
         /// </summary>
-        /// <param name="Version">The required NFS version</param>
-        public NFSClient(NFSVersion Version)
+        /// <param name="version">The required NFS version</param>
+        public NfsClient(NfsVersion version)
         {
-            switch (Version)
+            switch (version)
             {
-                case NFSVersion.v2:
-                    this._nfsInterface = new NFSv2();
+                case NfsVersion.V2:
+                    _nfsInterface = new NFSv2();
                     break;
 
-                case NFSVersion.v3:
-                    this._nfsInterface = new NFSv3();
+                case NfsVersion.V3:
+                    _nfsInterface = new NFSv3();
                     break;
 
-                case NFSVersion.v4:
-                    this._nfsInterface = new NFSv4();
+                case NfsVersion.V4:
+                    _nfsInterface = new NFSv4();
                     break;
 
                 default:
@@ -164,33 +144,37 @@ namespace NFSLibrary
         /// <summary>
         /// Create a connection to a NFS Server
         /// </summary>
-        /// <param name="Address">The server address</param>
-        public void Connect(IPAddress Address)
-        { Connect(Address, 0, 0, 60000, System.Text.Encoding.ASCII, true, false); }
+        /// <param name="address">The server address</param>
+        public void Connect(IPAddress address)
+        {
+            Connect(address, 0, 0, 60000, System.Text.Encoding.ASCII, true, false);
+        }
 
         /// <summary>
         /// Create a connection to a NFS Server
         /// </summary>
-        /// <param name="Address">The server address</param>
-        /// <param name="UserId">The unix user id</param>
-        /// <param name="GroupId">The unix group id</param>
-        /// <param name="CommandTimeout">The command timeout in milliseconds</param>
-        public void Connect(IPAddress Address, int UserId, int GroupId, int CommandTimeout)
-        { Connect(Address, UserId, GroupId, CommandTimeout, System.Text.Encoding.ASCII, true, false); }
+        /// <param name="address">The server address</param>
+        /// <param name="userId">The unix user id</param>
+        /// <param name="groupId">The unix group id</param>
+        /// <param name="commandTimeout">The command timeout in milliseconds</param>
+        public void Connect(IPAddress address, int userId, int groupId, int commandTimeout)
+        {
+            Connect(address, userId, groupId, commandTimeout, System.Text.Encoding.ASCII, true, false);
+        }
 
         /// <summary>
         /// Create a connection to a NFS Server
         /// </summary>
-        /// <param name="Address">The server address</param>
-        /// <param name="UserId">The unix user id</param>
-        /// <param name="GroupId">The unix group id</param>
-        /// <param name="CommandTimeout">The command timeout in milliseconds</param>
+        /// <param name="address">The server address</param>
+        /// <param name="userId">The unix user id</param>
+        /// <param name="groupId">The unix group id</param>
+        /// <param name="commandTimeout">The command timeout in milliseconds</param>
         /// <param name="characterEncoding">Connection encoding</param>
         /// <param name="useSecurePort">Uses a local binding port less than 1024</param>
-        public void Connect(IPAddress Address, int UserId, int GroupId, int CommandTimeout, System.Text.Encoding characterEncoding, bool useSecurePort, bool useCache)
+        public void Connect(IPAddress address, int userId, int groupId, int commandTimeout, System.Text.Encoding characterEncoding, bool useSecurePort, bool useCache)
         {
-            this._nfsInterface.Connect(Address, UserId, GroupId, CommandTimeout, characterEncoding, useSecurePort, useCache);
-            this._IsConnected = true;
+            _nfsInterface.Connect(address, userId, groupId, commandTimeout, characterEncoding, useSecurePort, useCache);
+            _isConnected = true;
         }
 
         /// <summary>
@@ -198,29 +182,29 @@ namespace NFSLibrary
         /// </summary>
         public void Disconnect()
         {
-            this._nfsInterface.Disconnect();
-            this._IsConnected = false;
+            _nfsInterface.Disconnect();
+            _isConnected = false;
         }
 
         /// <summary>
         /// Get the list of the exported NFS devices
         /// </summary>
         /// <returns>A list of the exported NFS devices</returns>
-        public List<String> GetExportedDevices()
+        public List<string> GetExportedDevices()
         {
-            return this._nfsInterface.GetExportedDevices();
+            return _nfsInterface.GetExportedDevices();
         }
 
         /// <summary>
         /// Mount device
         /// </summary>
-        /// <param name="DeviceName">The device name</param>
-        public void MountDevice(String DeviceName)
+        /// <param name="deviceName">The device name</param>
+        public void MountDevice(string deviceName)
         {
-            this._nfsInterface.MountDevice(DeviceName);
+            _nfsInterface.MountDevice(deviceName);
             //cuz of NFS v4.1 we have to do this after session is created
-            this._blockSize = this._nfsInterface.GetBlockSize();
-            this._IsMounted = true;
+            blockSize = _nfsInterface.GetBlockSize();
+            _isMounted = true;
         }
 
         /// <summary>
@@ -228,41 +212,39 @@ namespace NFSLibrary
         /// </summary>
         public void UnMountDevice()
         {
-            this._nfsInterface.UnMountDevice();
-            this._IsMounted = false;
+            _nfsInterface.UnMountDevice();
+            _isMounted = false;
         }
 
         /// <summary>
         /// Get the items in a directory
         /// </summary>
-        /// <param name="DirectoryFullName">Directory name (e.g. "directory\subdirectory" or "." for the root)</param>
+        /// <param name="directoryFullName">Directory name (e.g. "directory\subdirectory" or "." for the root)</param>
         /// <returns>A list of the items name</returns>
-        public List<String> GetItemList(String DirectoryFullName)
+        public List<string> GetItemList(string directoryFullName)
         {
-            return GetItemList(DirectoryFullName, true);  //changed to true cuz i don't need .. and .
+            return GetItemList(directoryFullName, true);  //changed to true cuz i don't need .. and .
         }
 
         /// <summary>
         /// Get the items in a directory
         /// </summary>
-        /// <param name="DirectoryFullName">Directory name (e.g. "directory\subdirectory" or "." for the root)</param>
-        /// <param name="ExcludeNavigationDots">When posted as true, return list will not contains "." and ".."</param>
+        /// <param name="directoryFullName">Directory name (e.g. "directory\subdirectory" or "." for the root)</param>
+        /// <param name="excludeNavigationDots">When posted as true, return list will not contains "." and ".."</param>
         /// <returns>A list of the items name</returns>
-        public List<String> GetItemList(String DirectoryFullName, Boolean ExcludeNavigationDots)
+        public List<string> GetItemList(string directoryFullName, bool excludeNavigationDots)
         {
-            DirectoryFullName = CorrectPath(DirectoryFullName);
+            directoryFullName = CorrectPath(directoryFullName);
 
-            System.Collections.Generic.List<String> content = this._nfsInterface.GetItemList(DirectoryFullName);
+            List<string> content = _nfsInterface.GetItemList(directoryFullName);
 
-            if (ExcludeNavigationDots)
+            if (excludeNavigationDots)
             {
-                int dotIdx, ddotIdx;
-
-                dotIdx = content.IndexOf(".");
+                int dotIdx = content.IndexOf(".");
                 if (dotIdx > -1)
                     content.RemoveAt(dotIdx);
 
-                ddotIdx = content.IndexOf("..");
+                int ddotIdx = content.IndexOf("..");
                 if (ddotIdx > -1)
                     content.RemoveAt(ddotIdx);
             }
@@ -273,139 +255,138 @@ namespace NFSLibrary
         /// <summary>
         /// Get an item attribures
         /// </summary>
-        /// <param name="ItemFullName">The item full path name</param>
+        /// <param name="itemFullName">The item full path name</param>
         /// <returns>A NFSAttributes class</returns>
-        public NFSAttributes GetItemAttributes(String ItemFullName, bool ThrowExceptionIfNotFoud = true)
+        public NFSAttributes GetItemAttributes(string itemFullName, bool throwExceptionIfNotFoud = true)
         {
-            ItemFullName = CorrectPath(ItemFullName);
+            itemFullName = CorrectPath(itemFullName);
 
-            return this._nfsInterface.GetItemAttributes(ItemFullName, ThrowExceptionIfNotFoud);
+            return _nfsInterface.GetItemAttributes(itemFullName, throwExceptionIfNotFoud);
         }
 
         /// <summary>
         /// Create a new directory
         /// </summary>
-        /// <param name="DirectoryFullName">Directory full name</param>
-        public void CreateDirectory(String DirectoryFullName)
+        /// <param name="directoryFullName">Directory full name</param>
+        public void CreateDirectory(string directoryFullName)
         {
-            CreateDirectory(DirectoryFullName, this._Mode);
+            CreateDirectory(directoryFullName, _mode);
         }
 
         /// <summary>
         /// Create a new directory with Permission
         /// </summary>
-        /// <param name="DirectoryFullName">Directory full name</param>
-        /// <param name="Mode">Directory permissions</param>
-        public void CreateDirectory(String DirectoryFullName, NFSPermission Mode)
+        /// <param name="directoryFullName">Directory full name</param>
+        /// <param name="mode">Directory permissions</param>
+        public void CreateDirectory(string directoryFullName, NFSPermission mode)
         {
-            DirectoryFullName = CorrectPath(DirectoryFullName);
+            directoryFullName = CorrectPath(directoryFullName);
 
-            String ParentPath = System.IO.Path.GetDirectoryName(DirectoryFullName);
+            string parentPath = System.IO.Path.GetDirectoryName(directoryFullName);
 
-            if (!String.IsNullOrEmpty(ParentPath) &&
-                String.Compare(ParentPath, ".") != 0 &&
-                !FileExists(ParentPath))
+            if (!IsNullOrEmpty(parentPath) &&
+                CompareOrdinal(parentPath, ".") != 0 &&
+                !FileExists(parentPath))
             {
-                CreateDirectory(ParentPath);
+                CreateDirectory(parentPath);
             }
 
-            this._nfsInterface.CreateDirectory(DirectoryFullName, Mode);
+            _nfsInterface.CreateDirectory(directoryFullName, mode);
         }
 
         /// <summary>
         /// Delete a directory
         /// </summary>
-        /// <param name="DirectoryFullName">Directory full name</param>
-        public void DeleteDirectory(String DirectoryFullName)
+        /// <param name="directoryFullName">Directory full name</param>
+        public void DeleteDirectory(string directoryFullName)
         {
-            DeleteDirectory(DirectoryFullName, true);
+            DeleteDirectory(directoryFullName, true);
         }
 
         /// <summary>
         /// Delete a directory
         /// </summary>
-        /// <param name="DirectoryFullName">Directory full name</param>
-        public void DeleteDirectory(String DirectoryFullName, bool recursive)
+        /// <param name="directoryFullName">Directory full name</param>
+        public void DeleteDirectory(string directoryFullName, bool recursive)
         {
-            DirectoryFullName = CorrectPath(DirectoryFullName);
+            directoryFullName = CorrectPath(directoryFullName);
 
             if (recursive)
             {
-                foreach (String item in GetItemList(DirectoryFullName, true))
+                foreach (string item in GetItemList(directoryFullName, true))
                 {
-                    if (IsDirectory(String.Format("{0}\\{1}", DirectoryFullName, item)))
-                    { DeleteDirectory(String.Format("{0}\\{1}", DirectoryFullName, item), recursive); }
+                    if (IsDirectory($"{directoryFullName}\\{item}"))
+                    { DeleteDirectory($"{directoryFullName}\\{item}", recursive); }
                     else
-                    { DeleteFile(String.Format("{0}\\{1}", DirectoryFullName, item)); }
+                    { DeleteFile($"{directoryFullName}\\{item}"); }
                 }
             }
 
-            this._nfsInterface.DeleteDirectory(DirectoryFullName);
+            _nfsInterface.DeleteDirectory(directoryFullName);
         }
 
         /// <summary>
         /// Delete a file
         /// </summary>
-        /// <param name="FileFullName">File full name</param>
-        public void DeleteFile(String FileFullName)
+        /// <param name="fileFullName">File full name</param>
+        public void DeleteFile(string fileFullName)
         {
-            FileFullName = CorrectPath(FileFullName);
+            fileFullName = CorrectPath(fileFullName);
 
-            this._nfsInterface.DeleteFile(FileFullName);
+            _nfsInterface.DeleteFile(fileFullName);
         }
 
         /// <summary>
         /// Create a new file
         /// </summary>
-        /// <param name="FileFullName">File full name</param>
-        public void CreateFile(String FileFullName)
+        /// <param name="fileFullName">File full name</param>
+        public void CreateFile(string fileFullName)
         {
-            CreateFile(FileFullName, this._Mode);
+            CreateFile(fileFullName, _mode);
         }
 
         /// <summary>
         /// Create a new file with permission
         /// </summary>
-        /// <param name="FileFullName">File full name</param>
-        /// <param name="Mode">File permission</param>
-        public void CreateFile(String FileFullName, NFSPermission Mode)
+        /// <param name="fileFullName">File full name</param>
+        /// <param name="mode">File permission</param>
+        public void CreateFile(string fileFullName, NFSPermission mode)
         {
-            FileFullName = CorrectPath(FileFullName);
+            fileFullName = CorrectPath(fileFullName);
 
-            this._nfsInterface.CreateFile(FileFullName, Mode);
+            _nfsInterface.CreateFile(fileFullName, mode);
         }
 
         /// <summary>
         /// Copy a set of files from a remote directory to a local directory
         /// </summary>
-        /// <param name="SourceFileNames">A list of the remote files name</param>
-        /// <param name="SourceDirectoryFullName">The remote directory path (e.g. "directory\sub1\sub2" or "." for the root)</param>
-        /// <param name="DestinationDirectoryFullName">The destination local directory</param>
-        public void Read(List<String> SourceFileNames, String SourceDirectoryFullName, String DestinationDirectoryFullName)
+        /// <param name="sourceFileNames">A list of the remote files name</param>
+        /// <param name="sourceDirectoryFullName">The remote directory path (e.g. "directory\sub1\sub2" or "." for the root)</param>
+        /// <param name="destinationDirectoryFullName">The destination local directory</param>
+        public void Read(IEnumerable<string> sourceFileNames, string sourceDirectoryFullName, string destinationDirectoryFullName)
         {
-            if (System.IO.Directory.Exists(DestinationDirectoryFullName))
+            if (!System.IO.Directory.Exists(destinationDirectoryFullName))
+                return;
+            foreach (string fileName in sourceFileNames)
             {
-                foreach (String FileName in SourceFileNames)
-                {
-                    Read(Combine(FileName, SourceDirectoryFullName), System.IO.Path.Combine(DestinationDirectoryFullName, FileName));
-                }
+                Read(Combine(fileName, sourceDirectoryFullName), System.IO.Path.Combine(destinationDirectoryFullName, fileName));
             }
         }
 
         /// <summary>
         /// Copy a file from a remote directory to a local directory
         /// </summary>
-        /// <param name="SourceFilefullName">The remote file name</param>
-        /// <param name="DestinationFileFullName">The destination local directory</param>
-        public void Read(String SourceFileFullName, String DestinationFileFullName)
+        /// <param name="sourceFileFullName">The remote file name</param>
+        /// <param name="destinationFileFullName">The destination local directory</param>
+        public void Read(string sourceFileFullName, string destinationFileFullName)
         {
             System.IO.Stream fs = null;
             try
             {
-                if (System.IO.File.Exists(DestinationFileFullName))
-                    System.IO.File.Delete(DestinationFileFullName);
-                fs = new System.IO.FileStream(DestinationFileFullName, System.IO.FileMode.CreateNew);
-                Read(SourceFileFullName, ref fs);
+                if (System.IO.File.Exists(destinationFileFullName))
+                    System.IO.File.Delete(destinationFileFullName);
+                fs = new System.IO.FileStream(destinationFileFullName, System.IO.FileMode.CreateNew);
+                Read(sourceFileFullName, ref fs);
             }
             finally
             {
@@ -420,45 +401,42 @@ namespace NFSLibrary
         /// <summary>
         /// Copy a file from a remote directory to a stream
         /// </summary>
-        /// <param name="SourceFileFullName">The remote file name</param>
-        /// <param name="OutputStream"></param>
-        public void Read(String SourceFileFullName, ref System.IO.Stream OutputStream)
+        /// <param name="sourceFileFullName">The remote file name</param>
+        /// <param name="outputStream"></param>
+        public void Read(string sourceFileFullName, ref System.IO.Stream outputStream)
         {
-            if (OutputStream != null)
+            if (outputStream != null)
             {
-                SourceFileFullName = CorrectPath(SourceFileFullName);
+                sourceFileFullName = CorrectPath(sourceFileFullName);
 
-                if (!FileExists(SourceFileFullName))
+                if (!FileExists(sourceFileFullName))
                     throw new System.IO.FileNotFoundException();
-                NFSAttributes nfsAttributes = GetItemAttributes(SourceFileFullName, true);
-                long TotalRead = nfsAttributes.Size, ReadOffset = 0;
+                NFSAttributes nfsAttributes = GetItemAttributes(sourceFileFullName, true);
+                long totalRead = nfsAttributes.Size, readOffset = 0;
 
-                Byte[] ChunkBuffer = (Byte[])Array.CreateInstance(typeof(Byte), this._blockSize);
-                int ReadCount, ReadLength = this._blockSize;
+                byte[] chunkBuffer = new byte[blockSize];
+                int readCount, readLength = blockSize;
 
                 do
                 {
-                    if (TotalRead < ReadLength)
+                    if (totalRead < readLength)
                     {
-                        ReadLength = (int)TotalRead;
+                        readLength = (int)totalRead;
                     }
 
-                    ReadCount = this._nfsInterface.Read(SourceFileFullName, ReadOffset, ReadLength, ref ChunkBuffer);
+                    readCount = _nfsInterface.Read(sourceFileFullName, readOffset, readLength, ref chunkBuffer);
 
-                    if (this.DataEvent != null)
-                    {
-                        this.DataEvent(this, new NFSEventArgs(ReadCount));
-                    }
+                    DataEvent?.Invoke(this, new NfsEventArgs(readCount));
 
-                    OutputStream.Write(ChunkBuffer, 0, ReadCount);
+                    outputStream.Write(chunkBuffer, 0, readCount);
 
-                    TotalRead -= ReadCount; ReadOffset += ReadCount;
+                    totalRead -= readCount; readOffset += readCount;
                 }
-                while (ReadCount != 0);
+                while (readCount != 0);
 
-                OutputStream.Flush();
+                outputStream.Flush();
 
-                CompleteIO();
+                CompleteIo();
             }
             else
             {
@@ -469,93 +447,91 @@ namespace NFSLibrary
         /// <summary>
         /// Copy a remote file to a buffer, CompleteIO proc must called end of the reading process for system stability
         /// </summary>
-        /// <param name="SourceFileFullName">The remote file full path</param>
-        /// <param name="Offset">Start offset</param>
+        /// <param name="sourceFileFullName">The remote file full path</param>
+        /// <param name="offset">Start offset</param>
         /// <param name="Count">Number of bytes</param>
-        /// <param name="Buffer">Output buffer</param>
+        /// <param name="buffer">Output buffer</param>
         /// <returns>The number of copied bytes</returns>
-        public long Read(String SourceFileFullName, long Offset, long TotalLenght, ref Byte[] Buffer)
+        public long Read(string sourceFileFullName, long offset, long totalLenght, ref byte[] buffer)
         {
             /* This function is not suitable for large file reading.
              * Big file reading will cause OS paging creation and
              * huge memory consumption.
              */
-            SourceFileFullName = CorrectPath(SourceFileFullName);
+            sourceFileFullName = CorrectPath(sourceFileFullName);
 
-            long ExactTotalLength = TotalLenght - Offset, CurrentPosition = 0;
+            long exactTotalLength = totalLenght - offset, currentPosition = 0;
 
             /* Prepare full Buffer to read */
-            Buffer = (Byte[])Array.CreateInstance(typeof(Byte), ExactTotalLength);
+            buffer = new byte[exactTotalLength];
 
-            Byte[] ChunkBuffer = (Byte[])Array.CreateInstance(typeof(Byte), this._blockSize);
-            int ReadCount = 0, ReadLength = this._blockSize;
+            byte[] chunkBuffer = new byte[blockSize];
+            int readCount = 0, readLength = blockSize;
 
             do
             {
-                if ((ExactTotalLength - CurrentPosition) < ReadLength)
-                    ReadLength = (int)(ExactTotalLength - CurrentPosition);
+                if (exactTotalLength - currentPosition < readLength)
+                    readLength = (int)(exactTotalLength - currentPosition);
 
-                ReadCount = this._nfsInterface.Read(SourceFileFullName, Offset + CurrentPosition, ReadLength, ref ChunkBuffer);
+                readCount = _nfsInterface.Read(sourceFileFullName, offset + currentPosition, readLength, ref chunkBuffer);
 
-                if (this.DataEvent != null)
-                { this.DataEvent(this, new NFSEventArgs(ReadCount)); }
+                DataEvent?.Invoke(this, new NfsEventArgs(readCount));
 
-                Array.Copy(ChunkBuffer, 0, Buffer, CurrentPosition, ReadCount);
+                Array.Copy(chunkBuffer, 0, buffer, currentPosition, readCount);
 
-                CurrentPosition += ReadCount;
+                currentPosition += readCount;
             }
-            while (ReadCount != 0);
+            while (readCount != 0);
 
-            return CurrentPosition;
+            return currentPosition;
         }
 
         /// <summary>
         /// Copy a remote file to a buffer
         /// </summary>
-        /// <param name="SourceFileFullName">The remote file full path</param>
-        /// <param name="Offset">Start offset</param>
+        /// <param name="sourceFileFullName">The remote file full path</param>
+        /// <param name="offset">Start offset</param>
         /// <param name="Count">Number of bytes</param>
-        /// <param name="Buffer">Output buffer</param>
-        public void Read(String SourceFileFullName, Int64 Offset, ref Int64 TotalLenght, ref Byte[] Buffer)
+        /// <param name="buffer">Output buffer</param>
+        public void Read(string sourceFileFullName, long offset, ref long totalLenght, ref byte[] buffer)
         {
-            SourceFileFullName = CorrectPath(SourceFileFullName);
+            sourceFileFullName = CorrectPath(sourceFileFullName);
 
-            UInt32 BlockSize = (UInt32)_blockSize;
-            UInt32 CurrentPosition = 0;
+            uint blockSize = (uint)this.blockSize;
+            uint currentPosition = 0;
             do
             {
-                UInt32 ChunkCount = BlockSize;
-                if ((TotalLenght - CurrentPosition) < BlockSize)
-                    ChunkCount = (UInt32)TotalLenght - CurrentPosition;
+                uint chunkCount = blockSize;
+                if (totalLenght - currentPosition < blockSize)
+                    chunkCount = (uint)totalLenght - currentPosition;
 
-                Byte[] ChunkBuffer = new Byte[ChunkCount];
-                int Size = _nfsInterface.Read(SourceFileFullName, Offset + CurrentPosition, (int)ChunkCount, ref ChunkBuffer);
+                byte[] chunkBuffer = new byte[chunkCount];
+                int size = _nfsInterface.Read(sourceFileFullName, offset + currentPosition, (int)chunkCount, ref chunkBuffer);
 
-                if (DataEvent != null)
-                    DataEvent(this, new NFSEventArgs((int)ChunkCount));
+                DataEvent?.Invoke(this, new NfsEventArgs((int)chunkCount));
 
-                if (Size == 0)
+                if (size == 0)
                 {
-                    TotalLenght = CurrentPosition;
+                    totalLenght = currentPosition;
                     return;
                 }
 
-                Array.Copy(ChunkBuffer, 0, Buffer, CurrentPosition, Size);
-                CurrentPosition += (UInt32)Size;
-            } while (CurrentPosition != TotalLenght);
+                Array.Copy(chunkBuffer, 0, buffer, currentPosition, size);
+                currentPosition += (uint)size;
+            } while (currentPosition != totalLenght);
         }
 
         /// <summary>
         /// Copy a local file to a remote directory
         /// </summary>
-        /// <param name="DestinationFileFullName">The destination file full name</param>
-        /// <param name="SourceFileFullName">The local full file path</param>
-        public void Write(String DestinationFileFullName, String SourceFileFullName)
+        /// <param name="destinationFileFullName">The destination file full name</param>
+        /// <param name="sourceFileFullName">The local full file path</param>
+        public void Write(string destinationFileFullName, string sourceFileFullName)
         {
-            if (System.IO.File.Exists(SourceFileFullName))
+            if (System.IO.File.Exists(sourceFileFullName))
             {
-                System.IO.FileStream wfs = new System.IO.FileStream(SourceFileFullName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                Write(DestinationFileFullName, wfs);
+                System.IO.FileStream wfs = new System.IO.FileStream(sourceFileFullName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                Write(destinationFileFullName, wfs);
                 wfs.Close();
             }
         }
@@ -563,49 +539,48 @@ namespace NFSLibrary
         /// <summary>
         /// Copy a local file to a remote file
         /// </summary>
-        /// <param name="DestinationFileFullName">The destination full file name</param>
-        /// <param name="InputStream">The input file stream</param>
-        public void Write(String DestinationFileFullName, System.IO.Stream InputStream)
+        /// <param name="destinationFileFullName">The destination full file name</param>
+        /// <param name="inputStream">The input file stream</param>
+        public void Write(string destinationFileFullName, System.IO.Stream inputStream)
         {
-            Write(DestinationFileFullName, 0, InputStream);
+            Write(destinationFileFullName, 0, inputStream);
         }
 
         /// <summary>
         /// Copy a local file stream to a remote file
         /// </summary>
-        /// <param name="DestinationFileFullName">The destination full file name</param>
-        /// <param name="InputOffset">The input offset in bytes</param>
-        /// <param name="InputStream">The input stream</param>
-        public void Write(String DestinationFileFullName, long InputOffset, System.IO.Stream InputStream)
+        /// <param name="destinationFileFullName">The destination full file name</param>
+        /// <param name="inputOffset">The input offset in bytes</param>
+        /// <param name="inputStream">The input stream</param>
+        public void Write(string destinationFileFullName, long inputOffset, System.IO.Stream inputStream)
         {
-            if (InputStream != null)
+            if (inputStream != null)
             {
-                DestinationFileFullName = CorrectPath(DestinationFileFullName);
+                destinationFileFullName = CorrectPath(destinationFileFullName);
 
-                if (!FileExists(DestinationFileFullName))
-                    CreateFile(DestinationFileFullName);
+                if (!FileExists(destinationFileFullName))
+                    CreateFile(destinationFileFullName);
 
-                long Offset = InputOffset;
+                long offset = inputOffset;
 
-                Byte[] Buffer = (Byte[])Array.CreateInstance(typeof(Byte), this._blockSize);
-                int ReadCount, WriteCount;
+                byte[] buffer = new byte[blockSize];
+                int readCount, writeCount;
 
                 do
                 {
-                    ReadCount = InputStream.Read(Buffer, 0, Buffer.Length);
+                    readCount = inputStream.Read(buffer, 0, buffer.Length);
 
-                    if (ReadCount != 0)
+                    if (readCount != 0)
                     {
-                        WriteCount = this._nfsInterface.Write(DestinationFileFullName, Offset, ReadCount, Buffer);
+                        writeCount = _nfsInterface.Write(destinationFileFullName, offset, readCount, buffer);
 
-                        if (this.DataEvent != null)
-                        { this.DataEvent(this, new NFSEventArgs(WriteCount)); }
+                        DataEvent?.Invoke(this, new NfsEventArgs(writeCount));
 
-                        Offset += ReadCount;
+                        offset += readCount;
                     }
-                } while (ReadCount != 0);
+                } while (readCount != 0);
 
-                CompleteIO();
+                CompleteIo();
             }
             else
             { throw new NullReferenceException("InputStream parameter must not be null!"); }
@@ -614,132 +589,126 @@ namespace NFSLibrary
         /// <summary>
         /// Copy a local file  to a remote directory, CompleteIO proc must called end of the writing process for system stability
         /// </summary>
-        /// <param name="DestinationFileFullName">The full local file path</param>
-        /// <param name="Offset">The start offset in bytes</param>
-        /// <param name="Count">The number of bytes to write</param>
-        /// <param name="Buffer">The input buffer</param>
-        public void Write(String DestinationFileFullName, long Offset, int Count, Byte[] Buffer)
+        /// <param name="destinationFileFullName">The full local file path</param>
+        /// <param name="offset">The start offset in bytes</param>
+        /// <param name="count">The number of bytes to write</param>
+        /// <param name="buffer">The input buffer</param>
+        public void Write(string destinationFileFullName, long offset, int count, byte[] buffer)
         {
-            DestinationFileFullName = CorrectPath(DestinationFileFullName);
+            destinationFileFullName = CorrectPath(destinationFileFullName);
 
-            if (!FileExists(DestinationFileFullName))
-                CreateFile(DestinationFileFullName);
+            if (!FileExists(destinationFileFullName))
+                CreateFile(destinationFileFullName);
 
-            long CurrentPosition = 0;
+            long currentPosition = 0;
 
-            Byte[] ChunkBuffer = (Byte[])Array.CreateInstance(typeof(Byte), this._blockSize);
-            int WriteCount = 0, WriteLength = this._blockSize;
+            byte[] chunkBuffer = new byte[blockSize];
+            int writeCount = 0, writeLength = blockSize;
 
             do
             {
-                if ((Count - CurrentPosition) < WriteLength)
-                { WriteLength = (int)(Count - CurrentPosition); }
+                if (count - currentPosition < writeLength)
+                { writeLength = (int)(count - currentPosition); }
 
-                Array.Copy(Buffer, CurrentPosition, ChunkBuffer, 0, WriteLength);
-                WriteCount = this._nfsInterface.Write(DestinationFileFullName, Offset + CurrentPosition, WriteLength, ChunkBuffer);
+                Array.Copy(buffer, currentPosition, chunkBuffer, 0, writeLength);
+                writeCount = _nfsInterface.Write(destinationFileFullName, offset + currentPosition, writeLength, chunkBuffer);
 
-                if (this.DataEvent != null)
-                { this.DataEvent(this, new NFSEventArgs(WriteCount)); }
+                DataEvent?.Invoke(this, new NfsEventArgs(writeCount));
 
-                CurrentPosition += WriteCount;
-            } while (Count != CurrentPosition);
+                currentPosition += writeCount;
+            } while (count != currentPosition);
         }
 
         /// <summary>
         /// Copy a local file  to a remote directory
         /// </summary>
-        /// <param name="DestinationFileFullName">The full local file path</param>
-        /// <param name="Offset">The start offset in bytes</param>
-        /// <param name="Count">The number of bytes</param>
-        /// <param name="Buffer">The input buffer</param>
+        /// <param name="destinationFileFullName">The full local file path</param>
+        /// <param name="offset">The start offset in bytes</param>
+        /// <param name="count">The number of bytes</param>
+        /// <param name="buffer">The input buffer</param>
         /// <returns>Returns the total written bytes</returns>
-        public void Write(String DestinationFileFullName, Int64 Offset, UInt32 Count, Byte[] Buffer, out UInt32 TotalLenght)
+        public void Write(string destinationFileFullName, long offset, uint count, byte[] buffer, out uint totalLenght)
         {
-            DestinationFileFullName = CorrectPath(DestinationFileFullName);
+            destinationFileFullName = CorrectPath(destinationFileFullName);
 
-            TotalLenght = Count;
-            UInt32 BlockSize = (UInt32)_blockSize;
-            UInt32 CurrentPosition = 0;
-            if (Buffer != null)
+            totalLenght = count;
+            uint blockSize = (uint)this.blockSize;
+            uint currentPosition = 0;
+            if (buffer == null)
+                return;
+            do
             {
-                do
-                {
-                    Int32 Size = -1;
-                    UInt32 ChunkCount = BlockSize;
-                    if ((TotalLenght - CurrentPosition) < BlockSize)
-                        ChunkCount = (UInt32)TotalLenght - CurrentPosition;
+                int size = -1;
+                uint chunkCount = blockSize;
+                if (totalLenght - currentPosition < blockSize)
+                    chunkCount = (uint)totalLenght - currentPosition;
 
-                    Byte[] ChunkBuffer = new Byte[ChunkCount];
-                    Array.Copy(Buffer, (int)CurrentPosition, ChunkBuffer, 0, (Int32)ChunkCount);
-                    Size = _nfsInterface.Write(DestinationFileFullName, Offset + CurrentPosition, (int)ChunkCount, ChunkBuffer);
-                    if (DataEvent != null)
-                        DataEvent(this, new NFSEventArgs((int)ChunkCount));
-                    if (Size == 0)
-                    {
-                        TotalLenght = CurrentPosition;
-                        return;
-                    }
-                    CurrentPosition += (UInt32)ChunkCount;
-                } while (CurrentPosition != TotalLenght);
-            }
+                byte[] chunkBuffer = new byte[chunkCount];
+                Array.Copy(buffer, (int)currentPosition, chunkBuffer, 0, (int)chunkCount);
+                size = _nfsInterface.Write(destinationFileFullName, offset + currentPosition, (int)chunkCount, chunkBuffer);
+                DataEvent?.Invoke(this, new NfsEventArgs((int)chunkCount));
+                if (size == 0)
+                {
+                    totalLenght = currentPosition;
+                    return;
+                }
+                currentPosition += (uint)chunkCount;
+            } while (currentPosition != totalLenght);
         }
 
         /// <summary>
         /// Move a file from/to a directory
         /// </summary>
-        /// <param name="SourceFileFullName">The exact file location for source (e.g. "directory\sub1\sub2\filename" or "." for the root)</param>
-        /// <param name="TargetFileFullName">Target location of moving file (e.g. "directory\sub1\sub2\filename" or "." for the root)</param>
-        public void Move(String SourceFileFullName, String TargetFileFullName)
+        /// <param name="sourceFileFullName">The exact file location for source (e.g. "directory\sub1\sub2\filename" or "." for the root)</param>
+        /// <param name="targetFileFullName">Target location of moving file (e.g. "directory\sub1\sub2\filename" or "." for the root)</param>
+        public void Move(string sourceFileFullName, string targetFileFullName)
         {
-            if (!String.IsNullOrEmpty(TargetFileFullName))
+            if (!IsNullOrEmpty(targetFileFullName))
             {
-                if (TargetFileFullName.LastIndexOf('\\') + 1 == TargetFileFullName.Length)
+                if (targetFileFullName.LastIndexOf('\\') + 1 == targetFileFullName.Length)
                 {
-                    TargetFileFullName = System.IO.Path.Combine(
-                                            TargetFileFullName,
-                                            System.IO.Path.GetFileName(SourceFileFullName));
+                    targetFileFullName = System.IO.Path.Combine(targetFileFullName, System.IO.Path.GetFileName(sourceFileFullName));
                 }
             }
 
-            SourceFileFullName = CorrectPath(SourceFileFullName);
-            TargetFileFullName = CorrectPath(TargetFileFullName);
+            sourceFileFullName = CorrectPath(sourceFileFullName);
+            targetFileFullName = CorrectPath(targetFileFullName);
 
-            this._nfsInterface.Move(
-                System.IO.Path.GetDirectoryName(SourceFileFullName),
-                System.IO.Path.GetFileName(SourceFileFullName),
-                System.IO.Path.GetDirectoryName(TargetFileFullName),
-                System.IO.Path.GetFileName(TargetFileFullName)
+            _nfsInterface.Move(
+                System.IO.Path.GetDirectoryName(sourceFileFullName),
+                System.IO.Path.GetFileName(sourceFileFullName),
+                System.IO.Path.GetDirectoryName(targetFileFullName),
+                System.IO.Path.GetFileName(targetFileFullName)
             );
         }
 
         /// <summary>
         /// Check if the passed path refers to a directory
         /// </summary>
-        /// <param name="DirectoryFullName">The full path (e.g. "directory\sub1\sub2" or "." for the root)</param>
+        /// <param name="directoryFullName">The full path (e.g. "directory\sub1\sub2" or "." for the root)</param>
         /// <returns>True if is a directory</returns>
-        public bool IsDirectory(String DirectoryFullName)
+        public bool IsDirectory(string directoryFullName)
         {
-            DirectoryFullName = CorrectPath(DirectoryFullName);
+            directoryFullName = CorrectPath(directoryFullName);
 
-            return this._nfsInterface.IsDirectory(DirectoryFullName);
+            return _nfsInterface.IsDirectory(directoryFullName);
         }
 
         /// <summary>
         /// Completes Current Read/Write Caching and Release Resources
         /// </summary>
-        public void CompleteIO()
-        { this._nfsInterface.CompleteIO(); }
+        public void CompleteIo() => _nfsInterface.CompleteIO();
 
         /// <summary>
         /// Check if a file/directory exists
         /// </summary>
-        /// <param name="FileFullName">The item full name</param>
+        /// <param name="fileFullName">The item full name</param>
         /// <returns>True if exists</returns>
-        public bool FileExists(String FileFullName)
+        public bool FileExists(string fileFullName)
         {
-            FileFullName = CorrectPath(FileFullName);
+            fileFullName = CorrectPath(fileFullName);
 
-            return (GetItemAttributes(FileFullName, false) != null);
+            return GetItemAttributes(fileFullName, false) != null;
         }
 
         /// <summary>
@@ -747,13 +716,15 @@ namespace NFSLibrary
         /// </summary>
         /// <param name="FullFilePath">The source path</param>
         /// <returns>The file/directory name</returns>
-        public String GetFileName(String FileFullName)
+        public string GetFileName(string fileFullName)
         {
-            FileFullName = CorrectPath(FileFullName);
+            fileFullName = CorrectPath(fileFullName);
 
-            String str = System.IO.Path.GetFileName(FileFullName);
-            if (String.IsNullOrEmpty(str))
+            string str = System.IO.Path.GetFileName(fileFullName);
+            if (IsNullOrEmpty(str))
+            {
                 str = ".";
+            }
 
             return str;
         }
@@ -761,15 +732,17 @@ namespace NFSLibrary
         /// <summary>
         /// Get the directory name from a standard windwos path (eg. "\\test\test1\text.txt" --> "test\\test1" or "\\" --> ".")
         /// </summary>
-        /// <param name="FullDirectoryName">The full path(e.g. "directory/sub1/sub2" or "." for the root)</param>
+        /// <param name="fullDirectoryName">The full path(e.g. "directory/sub1/sub2" or "." for the root)</param>
         /// <returns>The directory name</returns>
-        public string GetDirectoryName(String FullDirectoryName)
+        public string GetDirectoryName(string fullDirectoryName)
         {
-            FullDirectoryName = CorrectPath(FullDirectoryName);
+            fullDirectoryName = CorrectPath(fullDirectoryName);
 
-            String str = System.IO.Path.GetDirectoryName(FullDirectoryName);
-            if (String.IsNullOrEmpty(str))
+            string str = System.IO.Path.GetDirectoryName(fullDirectoryName);
+            if (IsNullOrEmpty(str))
+            {
                 str = ".";
+            }
 
             return str;
         }
@@ -777,48 +750,43 @@ namespace NFSLibrary
         /// <summary>
         /// Combine a file name to a directory (eg. FileName "test.txt", Directory "test" --> "test\test.txt" or FileName "test.txt", Directory "." --> "test.txt")
         /// </summary>
-        /// <param name="FileName">The file name</param>
+        /// <param name="fileName">The file name</param>
         /// <param name="DirectoryName">The directory name (e.g. "directory\sub1\sub2" or "." for the root)</param>
         /// <returns>The combined path</returns>
-        public string Combine(String FileName, String DirectoryFullName)
+        public string Combine(string fileName, string directoryFullName)
         {
-            DirectoryFullName = CorrectPath(DirectoryFullName);
+            directoryFullName = CorrectPath(directoryFullName);
 
-            return String.Format("{0}\\{1}", DirectoryFullName, FileName);
+            return $"{directoryFullName}\\{fileName}";
         }
 
         /// <summary>
         /// Set the file size
         /// </summary>
-        /// <param name="FileFullName">The file full path</param>
-        /// <param name="Size">the size in bytes</param>
-        public void SetFileSize(String FileFullName, long Size)
+        /// <param name="fileFullName">The file full path</param>
+        /// <param name="size">the size in bytes</param>
+        public void SetFileSize(string fileFullName, long size)
         {
-            FileFullName = CorrectPath(FileFullName);
+            fileFullName = CorrectPath(fileFullName);
 
-            this._nfsInterface.SetFileSize(FileFullName, Size);
+            _nfsInterface.SetFileSize(fileFullName, size);
         }
 
-        private string CorrectPath(String PathEntry)
+        public static string CorrectPath(string pathEntry)
         {
-            if (!String.IsNullOrEmpty(PathEntry))
+            if (IsNullOrEmpty(pathEntry))
+                return pathEntry;
+
+            string[] pathList = pathEntry.Split('\\');
+
+            pathEntry = Join("\\", pathList.Where(item => !IsNullOrEmpty(item)).ToArray());
+
+            if (pathEntry.IndexOf('.') != 0)
             {
-                String[] PathList = PathEntry.Split('\\');
-                List<string> newPathList = new List<string>();
-
-                foreach (String item in PathList)
-                {
-                    if (!String.IsNullOrEmpty(item))
-                    { newPathList.Add(item); }
-                }
-
-                PathEntry = String.Join("\\", newPathList.ToArray());
-
-                if (PathEntry.IndexOf('.') != 0)
-                { PathEntry = String.Concat(".\\", PathEntry); }
+                pathEntry = Concat(".\\", pathEntry);
             }
 
-            return PathEntry;
+            return pathEntry;
         }
 
         #endregion Methods
