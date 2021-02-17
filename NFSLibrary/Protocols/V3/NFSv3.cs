@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
-using NFSLibrary.Protocols.Commons;
+﻿using NFSLibrary.Protocols.Commons;
 using NFSLibrary.Protocols.Commons.Exceptions;
 using NFSLibrary.Protocols.Commons.Exceptions.Mount;
 using NFSLibrary.Protocols.V3.RPC;
 using NFSLibrary.Protocols.V3.RPC.Mount;
 using org.acplt.oncrpc;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace NFSLibrary.Protocols.V3
 {
@@ -27,11 +26,11 @@ namespace NFSLibrary.Protocols.V3
         private int _GroupID = -1;
         private int _UserID = -1;
 
-        #endregion
+        #endregion Fields
 
         #region Constructur
 
-        public void Connect(IPAddress Address, int UserID, int GroupID, int ClientTimeout, System.Text.Encoding characterEncoding, bool useSecurePort)
+        public void Connect(IPAddress Address, int UserID, int GroupID, int ClientTimeout, System.Text.Encoding characterEncoding, bool useSecurePort, bool useCache)
         {
             if (ClientTimeout == 0)
             { ClientTimeout = 60000; }
@@ -48,21 +47,22 @@ namespace NFSLibrary.Protocols.V3
             _GroupID = GroupID;
             _UserID = UserID;
 
-            _MountProtocolV3 = new NFSv3MountProtocolClient(Address, OncRpcProtocols.ONCRPC_UDP, useSecurePort);
-            _ProtocolV3 = new NFSv3ProtocolClient(Address, OncRpcProtocols.ONCRPC_UDP, useSecurePort);
-
             OncRpcClientAuthUnix authUnix = new OncRpcClientAuthUnix(Address.ToString(), UserID, GroupID);
+
+            _MountProtocolV3 = new NFSv3MountProtocolClient(Address, OncRpcProtocols.ONCRPC_UDP, useSecurePort);
 
             _MountProtocolV3.GetClient().setAuth(authUnix);
             _MountProtocolV3.GetClient().setTimeout(ClientTimeout);
             _MountProtocolV3.GetClient().setCharacterEncoding(characterEncoding.WebName);
+
+            _ProtocolV3 = new NFSv3ProtocolClient(Address, OncRpcProtocols.ONCRPC_TCP, useSecurePort);
 
             _ProtocolV3.GetClient().setAuth(authUnix);
             _ProtocolV3.GetClient().setTimeout(ClientTimeout);
             _ProtocolV3.GetClient().setCharacterEncoding(characterEncoding.WebName);
         }
 
-        #endregion
+        #endregion Constructur
 
         #region Public Methods
 
@@ -79,6 +79,34 @@ namespace NFSLibrary.Protocols.V3
 
             if (_ProtocolV3 != null)
                 _ProtocolV3.close();
+        }
+
+        public int GetBlockSize()
+        {
+            //call fsinfo
+            FSInfoArguments argsfs = new FSInfoArguments();
+            argsfs.FSRoot = _RootDirectoryHandleObject;
+            ResultObject<FSInfoAccessOK, FSInfoAccessFAIL> fsinfo =
+             _ProtocolV3.NFSPROC3_FSINFO(argsfs);
+
+            if (fsinfo.Status == NFSStats.NFS_OK)
+            {
+                int maxTRrate = fsinfo.OK.PreferredReadRequestSize;
+                int maxRXrate = fsinfo.OK.PreferredWriteRequestSize;
+
+                if (maxTRrate > 8000 && maxRXrate > 8000)
+                {
+                    if (maxTRrate > 65336 && maxRXrate > 65336)
+                        return 65336;
+                    else if (maxTRrate == maxRXrate)
+                        return maxTRrate - 200;
+                    else if (maxTRrate < maxRXrate)
+                        return maxTRrate - 200;
+                    else
+                        return maxRXrate - 200;
+                }
+            }
+            return 8000;
         }
 
         public List<String> GetExportedDevices()
@@ -119,6 +147,14 @@ namespace NFSLibrary.Protocols.V3
             }
             else
             { MountExceptionHelpers.ThrowException(mnt.Status); }
+
+            /*
+
+            //custom
+            FSStatisticsArguments argsfs2 = new FSStatisticsArguments();
+            argsfs2.FSRoot = _RootDirectoryHandleObject;
+            ResultObject<FSStatisticsAccessOK, FSStatisticsAccessFAIL> fstat =
+                _ProtocolV3.NFSPROC3_FSSTAT(argsfs2);*/
         }
 
         public void UnMountDevice()
@@ -240,7 +276,7 @@ namespace NFSLibrary.Protocols.V3
                     if (pDirOpRes == null || pDirOpRes.Status == NFSStats.NFSERR_NOENT)
                     { attributes = null; break; }
 
-                    if(ThrowExceptionIfNotFound)
+                    if (ThrowExceptionIfNotFound)
                         ExceptionHelpers.ThrowException(pDirOpRes.Status);
                 }
             }
@@ -407,6 +443,9 @@ namespace NFSLibrary.Protocols.V3
 
             int rCount = 0;
 
+            if (Count == 0)
+                return 0;
+
             if (_CurrentItem != FileFullName)
             {
                 NFSAttributes Attributes = GetItemAttributes(FileFullName);
@@ -564,8 +603,6 @@ namespace NFSLibrary.Protocols.V3
             _CurrentItem = string.Empty;
         }
 
-        #endregion
+        #endregion Public Methods
     }
-
 }
-

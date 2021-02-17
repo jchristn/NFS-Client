@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 using System.Net;
@@ -12,11 +13,11 @@ using System.Net;
  * for the MOUNTPROG remote program. It provides method stubs
  * which, when called, in turn call the appropriate remote method (procedure).
  */
+
 namespace NFSLibrary.Protocols.V2.RPC.Mount
 {
     public class NFSv2MountProtocolClient : OncRpcClientStub
     {
-
         /**
          * Constructs a <code>NFSv2MountProtocolClient</code> client stub proxy object
          * from which the MOUNTPROG remote program can be accessed.
@@ -26,6 +27,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2MountProtocolClient(IPAddress host, int protocol)
             : base(host, NFSv2MountProtocol.MOUNTPROG, 1, 0, protocol, true)
         {
@@ -46,6 +48,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2MountProtocolClient(IPAddress host, int port, int protocol)
             : base(host, NFSv2MountProtocol.MOUNTPROG, 1, port, protocol, true)
         {
@@ -59,6 +62,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2MountProtocolClient(OncRpcClient client)
             : base(client)
         {
@@ -75,6 +79,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2MountProtocolClient(IPAddress host, int program, int version, int protocol)
             : base(host, program, version, 0, protocol, true)
         {
@@ -92,6 +97,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2MountProtocolClient(IPAddress host, int program, int version, int port, int protocol)
             : base(host, program, version, port, protocol, true)
         {
@@ -107,6 +113,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void MOUNTPROC_NULL()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -122,6 +129,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public MountStatus MOUNTPROC_MNT(Name arg1)
         {
             MountStatus result_ = new MountStatus();
@@ -137,6 +145,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public MountList MOUNTPROC_DUMP()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -153,6 +162,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void MOUNTPROC_UMNT(Name arg1)
         {
             XdrVoid result_ = XdrVoid.XDR_VOID;
@@ -165,6 +175,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void MOUNTPROC_UMNTALL()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -179,6 +190,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public Exports MOUNTPROC_EXPORT()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -188,7 +200,7 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
 
             return result_;
         }
-
     }
+
     // End of NFSv2MountProtocolClient.cs
 }

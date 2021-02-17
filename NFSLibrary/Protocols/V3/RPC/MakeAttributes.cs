@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -99,7 +100,7 @@ namespace NFSLibrary.Protocols.V3.RPC
 
             this._setmtime = (xdr.xdrDecodeBoolean() ? TimeHow.SET_TO_CLIENT_TIME : TimeHow.DONT_CHANGE);
             if (this._setmtime != TimeHow.DONT_CHANGE)
-            { this._mtime = new NFSTimeValue(xdr); }   
+            { this._mtime = new NFSTimeValue(xdr); }
         }
 
         public NFSPermission Mode
@@ -198,5 +199,6 @@ namespace NFSLibrary.Protocols.V3.RPC
             { this._setmtime = value; }
         }
     }
+
     // End of sattr3.cs
 }

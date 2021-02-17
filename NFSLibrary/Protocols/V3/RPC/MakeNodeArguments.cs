@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -71,15 +72,19 @@ namespace NFSLibrary.Protocols.V3.RPC
                 case NFSItemTypes.NFCHR:
                     this._device_chr.xdrEncode(xdr);
                     break;
+
                 case NFSItemTypes.NFBLK:
                     this._device_blk.xdrEncode(xdr);
                     break;
+
                 case NFSItemTypes.NFSOCK:
                     this._pipe_attributes_sock.xdrEncode(xdr);
                     break;
+
                 case NFSItemTypes.NFFIFO:
                     this._pipe_attributes_fifo.xdrEncode(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -94,15 +99,19 @@ namespace NFSLibrary.Protocols.V3.RPC
                 case NFSItemTypes.NFCHR:
                     this._device_chr = new DeviceData(xdr);
                     break;
+
                 case NFSItemTypes.NFBLK:
                     this._device_blk = new DeviceData(xdr);
                     break;
+
                 case NFSItemTypes.NFSOCK:
                     this._pipe_attributes_sock = new MakeAttributes(xdr);
                     break;
+
                 case NFSItemTypes.NFFIFO:
                     this._pipe_attributes_fifo = new MakeAttributes(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -188,5 +197,6 @@ namespace NFSLibrary.Protocols.V3.RPC
             { this._spec = value; }
         }
     }
+
     // End of MKNOD3args.cs
 }

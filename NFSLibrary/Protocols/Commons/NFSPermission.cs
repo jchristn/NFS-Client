@@ -3,7 +3,6 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
-using org.acplt.oncrpc;
 
 namespace NFSLibrary.Protocols.Commons
 {
@@ -65,6 +64,42 @@ namespace NFSLibrary.Protocols.Commons
                 this._user = (byte)((tUser >> 6) & 0x7);
                 this._group = (byte)((tGroup >> 3) & 0x7);
                 this._other = (byte)(tOther & 0x7);
+            }
+        }
+
+        override
+        public string ToString()
+        {
+            return calc_mode(_user) + " | " + calc_mode(_group) + " | " + calc_mode(_other);
+        }
+
+        private string calc_mode(byte modfg)
+        {
+            switch (modfg)
+            {
+                case 1:
+                    return "x";
+
+                case 2:
+                    return "w";
+
+                case 3:
+                    return "wx";
+
+                case 4:
+                    return "r";
+
+                case 5:
+                    return "rx";
+
+                case 6:
+                    return "rw";
+
+                case 7:
+                    return "rwx";
+
+                default:
+                    return "";
             }
         }
     }

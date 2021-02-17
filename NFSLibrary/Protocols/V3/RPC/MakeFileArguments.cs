@@ -3,7 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
-using NFSLibrary.Protocols.Commons;
+
 using org.acplt.oncrpc;
 
 namespace NFSLibrary.Protocols.V3.RPC
@@ -77,6 +77,7 @@ namespace NFSLibrary.Protocols.V3.RPC
                 case MakeFileModes.GUARDED:
                     this._obj_attributes.xdrEncode(xdr);
                     break;
+
                 case MakeFileModes.EXCLUSIVE:
                     xdr.xdrEncodeOpaque(this._verf, NFSv3Protocol.NFS3_CREATEVERFSIZE);
                     break;
@@ -93,6 +94,7 @@ namespace NFSLibrary.Protocols.V3.RPC
                 case MakeFileModes.GUARDED:
                     this._obj_attributes = new MakeAttributes(xdr);
                     break;
+
                 case MakeFileModes.EXCLUSIVE:
                     this._verf = xdr.xdrDecodeOpaque(NFSv3Protocol.NFS3_CREATEVERFSIZE);
                     break;
@@ -123,5 +125,6 @@ namespace NFSLibrary.Protocols.V3.RPC
             { this._verf = value; }
         }
     }
+
     // End of CREATE3args.cs
 }

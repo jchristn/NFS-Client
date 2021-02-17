@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -52,10 +53,10 @@ namespace NFSLibrary.Protocols.V2.RPC
         public void xdrDecode(XdrDecodingStream xdr)
         {
             this._type = (NFSItemTypes)xdr.xdrDecodeInt();
-            
+
             this._mode = new NFSPermission();
             this._mode.Mode = xdr.xdrDecodeInt();
-            
+
             this._nlink = xdr.xdrDecodeInt();
             this._uid = xdr.xdrDecodeInt();
             this._gid = xdr.xdrDecodeInt();
@@ -72,14 +73,14 @@ namespace NFSLibrary.Protocols.V2.RPC
             //blocksOnDisk = System.Math.Round(blocksOnDisk);
 
             ///* I think it's a bug on blocks value, cause some times blocks value
-            // * comes 8 value greater than calculated size. 
+            // * comes 8 value greater than calculated size.
             // * Following fixes the related bug(?) */
             //if (blocksOnDisk <= ((this._blocks / 8) - 1))
             //{ this._blocks -= 8; }
 
             //double diff = (blocksOnDisk - blockForFile) * this._blocksize;
 
-            //long bytesInBlock = (long)(this._blocks / 8) * (long)this._blocksize;         
+            //long bytesInBlock = (long)(this._blocks / 8) * (long)this._blocksize;
             //bytesInBlock -= (int)diff;
 
             //this._size = bytesInBlock >= 0? bytesInBlock : _size;
@@ -176,5 +177,6 @@ namespace NFSLibrary.Protocols.V2.RPC
             { return this._ctime; }
         }
     }
+
     // End of fattr.cs
 }

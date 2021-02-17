@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 using System.Net;
@@ -12,11 +13,11 @@ using System.Net;
  * for the NFS_PROGRAM remote program. It provides method stubs
  * which, when called, in turn call the appropriate remote method (procedure).
  */
+
 namespace NFSLibrary.Protocols.V2.RPC
 {
     public class NFSv2ProtocolClient : OncRpcClientStub
     {
-
         /**
          * Constructs a <code>NFSv2ProtocolClient</code> client stub proxy object
          * from which the NFS_PROGRAM remote program can be accessed.
@@ -26,6 +27,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2ProtocolClient(IPAddress host, int protocol)
             : base(host, NFSv2Protocol.NFS_PROGRAM, 2, 0, protocol, true)
         {
@@ -35,7 +37,7 @@ namespace NFSLibrary.Protocols.V2.RPC
             : base(host, NFSv2Protocol.NFS_PROGRAM, 2, 0, protocol, useSecurePort)
         {
         }
-       
+
         /**
          * Constructs a <code>NFSv2ProtocolClient</code> client stub proxy object
          * from which the NFS_PROGRAM remote program can be accessed.
@@ -46,6 +48,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2ProtocolClient(IPAddress host, int port, int protocol)
             : base(host, NFSv2Protocol.NFS_PROGRAM, 2, port, protocol, true)
         {
@@ -59,6 +62,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2ProtocolClient(OncRpcClient client)
             : base(client)
         {
@@ -75,6 +79,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2ProtocolClient(IPAddress host, int program, int version, int protocol)
             : base(host, program, version, 0, protocol, true)
         {
@@ -92,6 +97,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv2ProtocolClient(IPAddress host, int program, int version, int port, int protocol)
             : base(host, program, version, port, protocol, true)
         {
@@ -107,6 +113,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void NFSPROC_NULL()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -122,6 +129,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public FileStatus NFSPROC_GETATTR(NFSHandle arg1)
         {
             FileStatus result_ = new FileStatus();
@@ -138,6 +146,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public FileStatus NFSPROC_SETATTR(FileArguments arg1)
         {
             FileStatus result_ = new FileStatus();
@@ -152,6 +161,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void NFSPROC_ROOT()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -167,6 +177,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ItemOperationStatus NFSPROC_LOOKUP(ItemOperationArguments arg1)
         {
             ItemOperationStatus result_ = new ItemOperationStatus();
@@ -183,6 +194,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public LinkStatus NFSPROC_READLINK(NFSHandle arg1)
         {
             LinkStatus result_ = new LinkStatus();
@@ -199,6 +211,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ReadStatus NFSPROC_READ(ReadArguments arg1)
         {
             ReadStatus result_ = new ReadStatus();
@@ -213,6 +226,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void NFSPROC_WRITECACHE()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -228,6 +242,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public FileStatus NFSPROC_WRITE(WriteArguments arg1)
         {
             FileStatus result_ = new FileStatus();
@@ -244,6 +259,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ItemOperationStatus NFSPROC_CREATE(CreateArguments arg1)
         {
             ItemOperationStatus result_ = new ItemOperationStatus();
@@ -260,6 +276,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public int NFSPROC_REMOVE(ItemOperationArguments arg1)
         {
             XdrInt result_ = new XdrInt();
@@ -276,6 +293,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public int NFSPROC_RENAME(RenameArguments arg1)
         {
             XdrInt result_ = new XdrInt();
@@ -292,6 +310,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public int NFSPROC_LINK(LinkArguments arg1)
         {
             XdrInt result_ = new XdrInt();
@@ -308,6 +327,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public int NFSPROC_SYMLINK(SymlinkArguments arg1)
         {
             XdrInt result_ = new XdrInt();
@@ -324,6 +344,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ItemOperationStatus NFSPROC_MKDIR(CreateArguments arg1)
         {
             ItemOperationStatus result_ = new ItemOperationStatus();
@@ -340,6 +361,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public int NFSPROC_RMDIR(ItemOperationArguments arg1)
         {
             XdrInt result_ = new XdrInt();
@@ -356,6 +378,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ItemStatus NFSPROC_READDIR(ItemArguments arg1)
         {
             ItemStatus result_ = new ItemStatus();
@@ -372,6 +395,7 @@ namespace NFSLibrary.Protocols.V2.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public FSStatStatus NFSPROC_STATFS(NFSHandle arg1)
         {
             FSStatStatus result_ = new FSStatStatus();
@@ -380,7 +404,7 @@ namespace NFSLibrary.Protocols.V2.RPC
 
             return result_;
         }
-
     }
+
     // End of NFSv2ProtocolClient.cs
 }

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
 
 namespace NFSLibrary.Protocols.Commons
 {
     public interface INFS
     {
-        void Connect(IPAddress Address, int UserID, int GroupID, int ClientTimeout, System.Text.Encoding characterEncoding, bool useSecurePort);
+        void Connect(IPAddress Address, int UserID, int GroupID, int ClientTimeout, System.Text.Encoding characterEncoding, bool useSecurePort, bool useFHcache);
 
         void Disconnect();
+
+        int GetBlockSize();
 
         List<String> GetExportedDevices();
 
@@ -41,5 +42,4 @@ namespace NFSLibrary.Protocols.Commons
 
         void CompleteIO();
     }
-
 }

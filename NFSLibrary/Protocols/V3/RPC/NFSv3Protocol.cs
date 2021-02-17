@@ -6,6 +6,7 @@
 /**
  * A collection of constants used by the "NFSv3Protocol" ONC/RPC program.
  */
+
 namespace NFSLibrary.Protocols.V3.RPC
 {
     public class NFSv3Protocol
@@ -53,5 +54,6 @@ namespace NFSLibrary.Protocols.V3.RPC
         public const int NFS3_CREATEVERFSIZE = 8;
         public const int NFS3_FHSIZE = 64;
     }
+
     // End of NFSv3Protocol.cs
 }

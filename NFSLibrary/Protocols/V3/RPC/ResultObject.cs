@@ -3,13 +3,14 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
-using System;
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
+using System;
 
 namespace NFSLibrary.Protocols.V3.RPC
 {
-    public class ResultObject<O,F> : XdrAble
+    public class ResultObject<O, F> : XdrAble
     {
         private NFSStats _status;
         private O _resok;
@@ -28,8 +29,9 @@ namespace NFSLibrary.Protocols.V3.RPC
             switch (this._status)
             {
                 case NFSStats.NFS_OK:
-                   ((XdrAble)this._resok).xdrEncode(xdr);
+                    ((XdrAble)this._resok).xdrEncode(xdr);
                     break;
+
                 default:
                     ((XdrAble)this._resfail).xdrEncode(xdr);
                     break;
@@ -39,14 +41,15 @@ namespace NFSLibrary.Protocols.V3.RPC
         public void xdrDecode(XdrDecodingStream xdr)
         {
             this._status = (NFSStats)xdr.xdrDecodeInt();
-            
+
             switch (this._status)
             {
                 case NFSStats.NFS_OK:
                     Type OK = typeof(O);
 
-                    this._resok = (O)Activator.CreateInstance(OK, new object[] {xdr});
+                    this._resok = (O)Activator.CreateInstance(OK, new object[] { xdr });
                     break;
+
                 default:
                     Type FAIL = typeof(F);
 
@@ -73,5 +76,6 @@ namespace NFSLibrary.Protocols.V3.RPC
             { return this._resfail; }
         }
     }
+
     // End of FSSTAT3res.cs
 }

@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using org.acplt.oncrpc;
 using System.Net;
 
@@ -11,11 +12,11 @@ using System.Net;
  * for the NFS_PROGRAM remote program. It provides method stubs
  * which, when called, in turn call the appropriate remote method (procedure).
  */
+
 namespace NFSLibrary.Protocols.V3.RPC
 {
     public class NFSv3ProtocolClient : OncRpcClientStub
     {
-
         /**
          * Constructs a <code>NFSv3ProtocolClient</code> client stub proxy object
          * from which the NFS_PROGRAM remote program can be accessed.
@@ -25,6 +26,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv3ProtocolClient(IPAddress host, int protocol)
             : base(host, NFSv3Protocol.NFS_PROGRAM, 3, 0, protocol, true)
         {
@@ -45,6 +47,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv3ProtocolClient(IPAddress host, int port, int protocol)
             : base(host, NFSv3Protocol.NFS_PROGRAM, 3, port, protocol, true)
         {
@@ -58,6 +61,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv3ProtocolClient(OncRpcClient client)
             : base(client)
         {
@@ -74,6 +78,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv3ProtocolClient(IPAddress host, int program, int version, int protocol)
             : base(host, program, version, 0, protocol, true)
         {
@@ -91,6 +96,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public NFSv3ProtocolClient(IPAddress host, int program, int version, int port, int protocol)
             : base(host, program, version, port, protocol, true)
         {
@@ -108,17 +114,18 @@ namespace NFSLibrary.Protocols.V3.RPC
         * @throws OncRpcException if an ONC/RPC error occurs.
         * @throws IOException if an I/O error occurs.
         */
+
         public NFSv3ProtocolClient(IPAddress host, int program, int version, int port, int protocol, bool useSecurePort)
             : base(host, program, version, port, protocol, useSecurePort)
         {
         }
-
 
         /**
          * Call remote procedure NFSPROC3_NULL_3.
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public void NFSPROC3_NULL()
         {
             XdrVoid args_ = XdrVoid.XDR_VOID;
@@ -133,9 +140,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<GetAttributeAccessOK, GetAttributeAccessOK> NFSPROC3_GETATTR(GetAttributeArguments arg1)
         {
-            ResultObject<GetAttributeAccessOK, GetAttributeAccessOK> result_ = 
+            ResultObject<GetAttributeAccessOK, GetAttributeAccessOK> result_ =
                 new ResultObject<GetAttributeAccessOK, GetAttributeAccessOK>();
 
             client.call(NFSv3Protocol.NFSPROC3_GETATTR, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -150,9 +158,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<SetAttributeAccessOK, SetAttributeAccessFAIL> NFSPROC3_SETATTR(SetAttributeArguments arg1)
         {
-            ResultObject<SetAttributeAccessOK, SetAttributeAccessFAIL> result_ = 
+            ResultObject<SetAttributeAccessOK, SetAttributeAccessFAIL> result_ =
                 new ResultObject<SetAttributeAccessOK, SetAttributeAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_SETATTR, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -167,9 +176,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<ItemOperationAccessResultOK, ItemOperationAccessResultFAIL> NFSPROC3_LOOKUP(ItemOperationArguments arg1)
         {
-            ResultObject<ItemOperationAccessResultOK, ItemOperationAccessResultFAIL> result_ = 
+            ResultObject<ItemOperationAccessResultOK, ItemOperationAccessResultFAIL> result_ =
                 new ResultObject<ItemOperationAccessResultOK, ItemOperationAccessResultFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_LOOKUP, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -184,9 +194,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<AccessAccessOK, AccessAccessFAIL> NFSPROC3_ACCESS(AccessArguments arg1)
         {
-            ResultObject<AccessAccessOK, AccessAccessFAIL> result_ = 
+            ResultObject<AccessAccessOK, AccessAccessFAIL> result_ =
                 new ResultObject<AccessAccessOK, AccessAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_ACCESS, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -201,9 +212,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<ReadLinkAccessOK, ReadLinkAccessFAIL> NFSPROC3_READLINK(ReadLinkArguments arg1)
         {
-            ResultObject<ReadLinkAccessOK, ReadLinkAccessFAIL> result_ = 
+            ResultObject<ReadLinkAccessOK, ReadLinkAccessFAIL> result_ =
                 new ResultObject<ReadLinkAccessOK, ReadLinkAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_READLINK, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -218,9 +230,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<ReadAccessOK, ReadAccessFAIL> NFSPROC3_READ(ReadArguments arg1)
         {
-            ResultObject<ReadAccessOK, ReadAccessFAIL> result_ = 
+            ResultObject<ReadAccessOK, ReadAccessFAIL> result_ =
                 new ResultObject<ReadAccessOK, ReadAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_READ, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -235,9 +248,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<WriteAccessOK, WriteAccessFAIL> NFSPROC3_WRITE(WriteArguments arg1)
         {
-            ResultObject<WriteAccessOK, WriteAccessFAIL> result_ = 
+            ResultObject<WriteAccessOK, WriteAccessFAIL> result_ =
                 new ResultObject<WriteAccessOK, WriteAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_WRITE, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -252,9 +266,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<MakeFileAccessOK, MakeFileAccessFAIL> NFSPROC3_CREATE(MakeFileArguments arg1)
         {
-            ResultObject<MakeFileAccessOK, MakeFileAccessFAIL> result_ = 
+            ResultObject<MakeFileAccessOK, MakeFileAccessFAIL> result_ =
                 new ResultObject<MakeFileAccessOK, MakeFileAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_CREATE, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -269,9 +284,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<MakeFolderAccessOK, MakeFolderAccessFAIL> NFSPROC3_MKDIR(MakeFolderArguments arg1)
         {
-            ResultObject<MakeFolderAccessOK, MakeFolderAccessFAIL> result_ = 
+            ResultObject<MakeFolderAccessOK, MakeFolderAccessFAIL> result_ =
                 new ResultObject<MakeFolderAccessOK, MakeFolderAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_MKDIR, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -286,9 +302,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<SymlinkAccessOK, SymlinkAccessFAIL> NFSPROC3_SYMLINK(SymlinkArguments arg1)
         {
-            ResultObject<SymlinkAccessOK, SymlinkAccessFAIL> result_ = 
+            ResultObject<SymlinkAccessOK, SymlinkAccessFAIL> result_ =
                 new ResultObject<SymlinkAccessOK, SymlinkAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_SYMLINK, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -303,9 +320,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<MakeNodeAccessOK, MakeNodeAccessFAIL> NFSPROC3_MKNOD(MakeNodeArguments arg1)
         {
-            ResultObject<MakeNodeAccessOK, MakeNodeAccessFAIL> result_ = 
+            ResultObject<MakeNodeAccessOK, MakeNodeAccessFAIL> result_ =
                 new ResultObject<MakeNodeAccessOK, MakeNodeAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_MKNOD, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -320,9 +338,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<RemoveAccessOK, RemoveAccessFAIL> NFSPROC3_REMOVE(ItemOperationArguments arg1)
         {
-            ResultObject<RemoveAccessOK, RemoveAccessFAIL> result_ = 
+            ResultObject<RemoveAccessOK, RemoveAccessFAIL> result_ =
                 new ResultObject<RemoveAccessOK, RemoveAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_REMOVE, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -337,9 +356,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<RemoveAccessOK, RemoveAccessFAIL> NFSPROC3_RMDIR(ItemOperationArguments arg1)
         {
-            ResultObject<RemoveAccessOK, RemoveAccessFAIL> result_ = 
+            ResultObject<RemoveAccessOK, RemoveAccessFAIL> result_ =
                 new ResultObject<RemoveAccessOK, RemoveAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_RMDIR, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -354,9 +374,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<RenameAccessOK, RenameAccessFAIL> NFSPROC3_RENAME(RenameArguments arg1)
         {
-            ResultObject<RenameAccessOK, RenameAccessFAIL> result_ = 
+            ResultObject<RenameAccessOK, RenameAccessFAIL> result_ =
                 new ResultObject<RenameAccessOK, RenameAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_RENAME, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -371,9 +392,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<LinkAccessOK, LinkAccessFAIL> NFSPROC3_LINK(LinkArguments arg1)
         {
-            ResultObject<LinkAccessOK, LinkAccessFAIL> result_ = 
+            ResultObject<LinkAccessOK, LinkAccessFAIL> result_ =
                 new ResultObject<LinkAccessOK, LinkAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_LINK, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -388,6 +410,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<ReadFolderAccessResultOK, ReadFolderAccessResultFAIL> NFSPROC3_READDIR(ReadFolderArguments arg1)
         {
             ResultObject<ReadFolderAccessResultOK, ReadFolderAccessResultFAIL> result_ =
@@ -405,6 +428,7 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<ExtendedReadFolderAccessOK, ExtendedReadFolderAccessFAIL> NFSPROC3_READDIRPLUS(ExtendedReadFolderArguments arg1)
         {
             ResultObject<ExtendedReadFolderAccessOK, ExtendedReadFolderAccessFAIL> result_ =
@@ -422,9 +446,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<FSStatisticsAccessOK, FSStatisticsAccessFAIL> NFSPROC3_FSSTAT(FSStatisticsArguments arg1)
         {
-            ResultObject<FSStatisticsAccessOK, FSStatisticsAccessFAIL> result_ = 
+            ResultObject<FSStatisticsAccessOK, FSStatisticsAccessFAIL> result_ =
                 new ResultObject<FSStatisticsAccessOK, FSStatisticsAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_FSSTAT, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -439,9 +464,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<FSInfoAccessOK, FSInfoAccessFAIL> NFSPROC3_FSINFO(FSInfoArguments arg1)
         {
-            ResultObject<FSInfoAccessOK, FSInfoAccessFAIL> result_ = 
+            ResultObject<FSInfoAccessOK, FSInfoAccessFAIL> result_ =
                 new ResultObject<FSInfoAccessOK, FSInfoAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_FSINFO, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -456,9 +482,10 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<PathConfigurationAccessOK, PathConfigurationAccessFAIL> NFSPROC3_PATHCONF(PathConfigurationArguments arg1)
         {
-            ResultObject<PathConfigurationAccessOK, PathConfigurationAccessFAIL> result_ = 
+            ResultObject<PathConfigurationAccessOK, PathConfigurationAccessFAIL> result_ =
                 new ResultObject<PathConfigurationAccessOK, PathConfigurationAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_PATHCONF, NFSv3Protocol.NFS_V3, arg1, result_);
@@ -473,16 +500,17 @@ namespace NFSLibrary.Protocols.V3.RPC
          * @throws OncRpcException if an ONC/RPC error occurs.
          * @throws IOException if an I/O error occurs.
          */
+
         public ResultObject<CommitAccessOK, CommitAccessFAIL> NFSPROC3_COMMIT(CommitArguments arg1)
         {
-            ResultObject<CommitAccessOK, CommitAccessFAIL> result_ = 
+            ResultObject<CommitAccessOK, CommitAccessFAIL> result_ =
                 new ResultObject<CommitAccessOK, CommitAccessFAIL>();
 
             client.call(NFSv3Protocol.NFSPROC3_COMMIT, NFSv3Protocol.NFS_V3, arg1, result_);
 
             return result_;
         }
-
     }
+
     // End of NFSv3ProtocolClient.cs
 }

@@ -6,6 +6,7 @@
 /**
  * A collection of constants used by the "NFSv2Protocol" ONC/RPC program.
  */
+
 namespace NFSLibrary.Protocols.V2.RPC
 {
     public class NFSv2Protocol
@@ -38,5 +39,6 @@ namespace NFSLibrary.Protocols.V2.RPC
         public const int MAXDATA = 8192;
         public const int FHSIZE = 32;
     }
+
     // End of NFSv2Protocol.cs
 }

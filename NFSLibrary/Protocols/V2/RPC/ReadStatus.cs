@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -28,6 +29,7 @@ namespace NFSLibrary.Protocols.V2.RPC
                 case NFSStats.NFS_OK:
                     this._ok.xdrEncode(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -41,6 +43,7 @@ namespace NFSLibrary.Protocols.V2.RPC
                 case NFSStats.NFS_OK:
                     this._ok = new ReadAccessOK(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -94,5 +97,6 @@ namespace NFSLibrary.Protocols.V2.RPC
             { return this._data; }
         }
     }
+
     // End of readres.cs
 }

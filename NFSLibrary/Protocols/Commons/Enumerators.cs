@@ -6,6 +6,7 @@
 /**
  * Enumeration (collection of constants).
  */
+
 namespace NFSLibrary.Protocols.Commons
 {
     public enum NFSItemTypes
@@ -61,39 +62,40 @@ namespace NFSLibrary.Protocols.Commons
         MNTERR_PERM = 1,            /* Not owner */
         MNTERR_NOENT = 2,           /* No such file or directory */
         MNTERR_SRCH = 3,            /* No such process */
-        MNTERR_INTR = 4,            /* Interrupted system call */ 
+        MNTERR_INTR = 4,            /* Interrupted system call */
         MNTERR_IO = 5,              /* I/O error */
-        MNTERR_NXIO = 6,            /* No such device or address */ 
-        MNTERR_TOOBIG = 7,          /* Arg list too long */ 
-        MNTERR_NOEXEC = 8,          /* Exec format error */ 
-        MNTERR_BADF = 9,            /* Bad file number */ 
-        MNTERR_CHILD = 10,          /* No child processes */ 
+        MNTERR_NXIO = 6,            /* No such device or address */
+        MNTERR_TOOBIG = 7,          /* Arg list too long */
+        MNTERR_NOEXEC = 8,          /* Exec format error */
+        MNTERR_BADF = 9,            /* Bad file number */
+        MNTERR_CHILD = 10,          /* No child processes */
         MNTERR_AGAIN = 11,          /* Try again (Linux), No more processes (SCO Unix) */
         MNTERR_NOMEM = 12,          /* Out of memory (Linux), Not enough space (SCO Unix) */
         MNTERR_ACCES = 13,          /* Permission denied */
-        MNTERR_FAULT = 14,          /* Bad address */ 
+        MNTERR_FAULT = 14,          /* Bad address */
         MNTERR_NOTBLK = 15,         /* Block device required */
-        MNTERR_BUSY = 16,           /* Device or resource busy (Linux), Device busy (SCO Unix) */ 
-        MNTERR_EXIST = 17,          /* File exists */ 
-        MNTERR_XDEV = 18,           /* Cross-device link */ 
-        MNTERR_NODEV = 19,          /* No such device */ 
+        MNTERR_BUSY = 16,           /* Device or resource busy (Linux), Device busy (SCO Unix) */
+        MNTERR_EXIST = 17,          /* File exists */
+        MNTERR_XDEV = 18,           /* Cross-device link */
+        MNTERR_NODEV = 19,          /* No such device */
         MNTERR_NOTDIR = 20,         /* Not a directory */
-        MNTERR_ISDIR = 21,          /* Is a directory */ 
+        MNTERR_ISDIR = 21,          /* Is a directory */
         MNTERR_INVAL = 22,          /* Invalid argument */
-        MNTERR_NFILE = 23,          /* File table overflow */ 
-        MNTERR_MFILE = 24,          /* Too many open files */ 
-        MNTERR_NOTTY = 25,          /* Not a typewriter */ 
-        MNTERR_TXTBSY = 26,         /* Text file busy */ 
-        MNTERR_FBIG = 27,           /* File too large */ 
-        MNTERR_NOSPC = 28,          /* No space left on device */ 
-        MNTERR_SPIPE = 29,          /* Illegal seek */ 
-        MNTERR_ROFS = 30,           /* Read-only file system */ 
-        MNTERR_MLINK = 31,          /* Too many links */ 
-        MNTERR_PIPE = 32,           /* Broken pipe */ 
+        MNTERR_NFILE = 23,          /* File table overflow */
+        MNTERR_MFILE = 24,          /* Too many open files */
+        MNTERR_NOTTY = 25,          /* Not a typewriter */
+        MNTERR_TXTBSY = 26,         /* Text file busy */
+        MNTERR_FBIG = 27,           /* File too large */
+        MNTERR_NOSPC = 28,          /* No space left on device */
+        MNTERR_SPIPE = 29,          /* Illegal seek */
+        MNTERR_ROFS = 30,           /* Read-only file system */
+        MNTERR_MLINK = 31,          /* Too many links */
+        MNTERR_PIPE = 32,           /* Broken pipe */
         MNTERR_NAMETOOLONG = 63,    /* Filename too long */
 
         MNTERR_NOTSUPP = 10004,     /* Operation not supported */
         MNTERR_SERVERFAULT = 10006  /* A failure on the server */
     };
+
     // End of nfsstat.cs
 }

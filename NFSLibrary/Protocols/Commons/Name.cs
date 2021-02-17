@@ -3,8 +3,9 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
-using System;
+
 using org.acplt.oncrpc;
+using System;
 
 namespace NFSLibrary.Protocols.Commons
 {
@@ -35,5 +36,6 @@ namespace NFSLibrary.Protocols.Commons
             { this._value = value; }
         }
     }
+
     // End of filename.cs
 }

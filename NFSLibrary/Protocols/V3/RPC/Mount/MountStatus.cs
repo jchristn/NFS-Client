@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -28,6 +29,7 @@ namespace NFSLibrary.Protocols.V3.RPC.Mount
                 case NFSMountStats.MNT_OK:
                     this._mountinfo.xdrEncode(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -42,6 +44,7 @@ namespace NFSLibrary.Protocols.V3.RPC.Mount
                 case NFSMountStats.MNT_OK:
                     this._mountinfo = new MountAccessOK(xdr);
                     break;
+
                 default:
                     break;
             }
@@ -98,5 +101,6 @@ namespace NFSLibrary.Protocols.V3.RPC.Mount
             { return this._auth_flavors; }
         }
     }
+
     // End of mountres3.cs
 }

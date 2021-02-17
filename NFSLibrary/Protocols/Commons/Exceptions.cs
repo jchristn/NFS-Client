@@ -6,6 +6,7 @@
 /**
  * Enumeration (collection of constants).
  */
+
 using System;
 
 namespace NFSLibrary.Protocols.Commons.Exceptions
@@ -65,8 +66,8 @@ namespace NFSLibrary.Protocols.Commons.Exceptions
                     switch (ErrorCode)
                     {
                         case NFSStats.NFSERR_ACCES:
-                            throw new NFSAuthenticationException(Message);                      
-                        
+                            throw new NFSAuthenticationException(Message);
+
                         case NFSStats.NFSERR_DQUOT:
                         case NFSStats.NFSERR_EXIST:
                         case NFSStats.NFSERR_FBIG:
@@ -105,7 +106,6 @@ namespace NFSLibrary.Protocols.Commons.Exceptions
 
                         default:
                             throw new NFSGeneralException("General Exception Occured!");
-
                     }
                 }
                 else
@@ -227,7 +227,7 @@ namespace NFSLibrary.Protocols.Commons.Exceptions.Mount
                     {
                         case NFSMountStats.MNTERR_ACCES:
                             throw new NFSMountAuthenticationException(Message);
-                                                    
+
                         case NFSMountStats.MNTERR_EXIST:
                         case NFSMountStats.MNTERR_FBIG:
                         case NFSMountStats.MNTERR_IO:
@@ -272,7 +272,6 @@ namespace NFSLibrary.Protocols.Commons.Exceptions.Mount
 
                         default:
                             throw new NFSMountGeneralException("General Exception Occured!");
-
                     }
                 }
                 else

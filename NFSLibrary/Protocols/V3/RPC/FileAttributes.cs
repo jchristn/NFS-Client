@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using NFSLibrary.Protocols.Commons;
 using org.acplt.oncrpc;
 
@@ -59,10 +60,10 @@ namespace NFSLibrary.Protocols.V3.RPC
             this._gid = xdr.xdrDecodeInt();
             this._size = xdr.xdrDecodeLong();
             this._used = xdr.xdrDecodeLong();
-            
+
             this._rdev = new SpecInformation();
             this._rdev.xdrDecode(xdr);
-            
+
             this._fsid = xdr.xdrDecodeLong();
             this._fileid = xdr.xdrDecodeLong();
             this._atime = new NFSTimeValue(xdr);
@@ -148,5 +149,6 @@ namespace NFSLibrary.Protocols.V3.RPC
             { return this._ctime; }
         }
     }
+
     // End of fattr3.cs
 }

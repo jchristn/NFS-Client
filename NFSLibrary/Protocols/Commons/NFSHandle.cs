@@ -3,6 +3,7 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using org.acplt.oncrpc;
 
 namespace NFSLibrary.Protocols.Commons
@@ -24,6 +25,12 @@ namespace NFSLibrary.Protocols.Commons
         public NFSHandle(XdrDecodingStream xdr)
         { xdrDecode(xdr); }
 
+        public NFSHandle(XdrDecodingStream xdr, int version)
+        {
+            this._version = version;
+            xdrDecode(xdr);
+        }
+
         public void xdrEncode(XdrEncodingStream xdr)
         {
             switch (this._version)
@@ -31,6 +38,7 @@ namespace NFSLibrary.Protocols.Commons
                 case 2:
                     xdr.xdrEncodeOpaque(this._value, V2.RPC.NFSv2Protocol.FHSIZE);
                     break;
+
                 case 3:
                     xdr.xdrEncodeDynamicOpaque(this._value);
                     break;
@@ -42,10 +50,11 @@ namespace NFSLibrary.Protocols.Commons
             switch (this._version)
             {
                 case 2:
-                    this._value = xdr.xdrDecodeOpaque(V2.RPC.NFSv2Protocol.FHSIZE); 
+                    this._value = xdr.xdrDecodeOpaque(V2.RPC.NFSv2Protocol.FHSIZE);
                     break;
+
                 case 3:
-                    this._value = xdr.xdrDecodeDynamicOpaque(); 
+                    this._value = xdr.xdrDecodeDynamicOpaque();
                     break;
             }
         }
@@ -64,5 +73,6 @@ namespace NFSLibrary.Protocols.Commons
             { this._version = value; }
         }
     }
+
     // End of nfshandle.cs
 }

@@ -3,8 +3,8 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using System;
-using org.acplt.oncrpc;
 
 namespace NFSLibrary.Protocols.Commons
 {
@@ -17,8 +17,10 @@ namespace NFSLibrary.Protocols.Commons
         private NFSPermission _mode;
         private long _size;
         private Byte[] _handle;
+        //for nfs 4
+        //nfs_fh4 _fh;
 
-        public NFSAttributes(int cdateTime, int adateTime, int mdateTime, NFSItemTypes type, NFSPermission mode, long size, Byte[] handle)
+        public NFSAttributes(int cdateTime, int adateTime, int mdateTime, NFSItemTypes type, NFSPermission mode, long size, byte[] handle)
         {
             this._cdateTime = new System.DateTime(1970, 1, 1).AddSeconds(cdateTime);
             this._adateTime = new System.DateTime(1970, 1, 1).AddSeconds(adateTime);
@@ -28,6 +30,19 @@ namespace NFSLibrary.Protocols.Commons
             this._mode = mode;
             this._handle = (Byte[])handle.Clone();
         }
+
+        //TODO maybe we don't need this but anyway for nfs 4
+        /*public NFSAttributes(int cdateTime, int adateTime, int mdateTime, NFSItemTypes type, NFSPermission mode, long size,nfs_fh4 fh)
+        {
+            this._cdateTime = new System.DateTime(1970, 1, 1).AddSeconds(cdateTime);
+            this._adateTime = new System.DateTime(1970, 1, 1).AddSeconds(adateTime);
+            this._mdateTime = new System.DateTime(1970, 1, 1).AddSeconds(mdateTime);
+            this._type = type;
+            this._size = size;
+            this._mode = mode;
+            this._handle = (Byte[])fh.value.Clone();
+            //this._fh = fh;
+        }*/
 
         public DateTime CreateDateTime
         {
@@ -70,6 +85,12 @@ namespace NFSLibrary.Protocols.Commons
             get
             { return this._handle; }
         }
+
+        /*public nfs_fh4 fh
+        {
+            get
+            { return this._fh; }
+        }*/
 
         public override string ToString()
         {

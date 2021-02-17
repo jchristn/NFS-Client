@@ -3,17 +3,18 @@
  * jrpcgen is part of the "Remote Tea.Net" ONC/RPC package for C#
  * See http://remotetea.sourceforge.net for details
  */
+
 using org.acplt.oncrpc;
-using System.Net;
 using org.acplt.oncrpc.server;
+using System.Net;
 
 /**
  */
+
 namespace NFSLibrary.Protocols.V3.RPC
 {
     public abstract class NFSv3ProtocolServerStub : OncRpcServerStub, OncRpcDispatchable
     {
-
         public NFSv3ProtocolServerStub()
             : this(0)
         {
@@ -333,7 +334,7 @@ namespace NFSLibrary.Protocols.V3.RPC
         public abstract ResultObject<PathConfigurationAccessOK, PathConfigurationAccessFAIL> NFSPROC3_PATHCONF(PathConfigurationArguments arg1);
 
         public abstract ResultObject<CommitAccessOK, CommitAccessFAIL> NFSPROC3_COMMIT(CommitArguments arg1);
-
     }
+
     // End of NFSv3ProtocolServerStub.cs
 }

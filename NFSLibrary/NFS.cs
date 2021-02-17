@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using NFSLibrary.Protocols;
-using NFSLibrary.Protocols.Commons;
+﻿using NFSLibrary.Protocols.Commons;
 using NFSLibrary.Protocols.V2;
 using NFSLibrary.Protocols.V3;
-using System.Runtime.InteropServices;
+using NFSLibrary.Protocols.V4;
+using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace NFSLibrary
@@ -25,17 +24,19 @@ namespace NFSLibrary
             /// NFS Version 2
             /// </summary>
             v2 = 2,
+
             /// <summary>
             /// NFS Version 3
             /// </summary>
             v3 = 3,
+
             /// <summary>
             /// NFS Version 4.1
             /// </summary>
             v4 = 4
         }
 
-        #endregion
+        #endregion Enum
 
         #region Fields
 
@@ -50,11 +51,12 @@ namespace NFSLibrary
          * requesting on RPC, 8192 bytes contain every details
          * of request. we reserve 128 bytes for header information
          * of V2 and 192 bytes for header information of V3.
-         * V2: 8064 bytes for data. 
+         * V2: 8064 bytes for data.
          * V3: 8000 bytes for data. */
-        private int _blockSize = 8000;
+        public int _blockSize = 7900;
+        //this can change
 
-        #endregion
+        #endregion Fields
 
         #region Events
 
@@ -79,7 +81,7 @@ namespace NFSLibrary
             }
         }
 
-        #endregion
+        #endregion Events
 
         #region Properties
 
@@ -111,7 +113,7 @@ namespace NFSLibrary
                 if (this._Mode == null)
                 { this._Mode = new NFSPermission(7, 7, 7); }
 
-                return this._Mode; 
+                return this._Mode;
             }
             set
             { this._Mode = value; }
@@ -126,7 +128,7 @@ namespace NFSLibrary
             { return this._CurrentDirectory; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Constructor
 
@@ -139,13 +141,15 @@ namespace NFSLibrary
             switch (Version)
             {
                 case NFSVersion.v2:
-                    this._blockSize = 8064;
                     this._nfsInterface = new NFSv2();
                     break;
 
                 case NFSVersion.v3:
-                    this._blockSize = 8000;
                     this._nfsInterface = new NFSv3();
+                    break;
+
+                case NFSVersion.v4:
+                    this._nfsInterface = new NFSv4();
                     break;
 
                 default:
@@ -153,7 +157,7 @@ namespace NFSLibrary
             }
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Methods
 
@@ -162,7 +166,7 @@ namespace NFSLibrary
         /// </summary>
         /// <param name="Address">The server address</param>
         public void Connect(IPAddress Address)
-        { Connect(Address, 0, 0, 60000, System.Text.Encoding.ASCII, true); }
+        { Connect(Address, 0, 0, 60000, System.Text.Encoding.ASCII, true, false); }
 
         /// <summary>
         /// Create a connection to a NFS Server
@@ -172,7 +176,7 @@ namespace NFSLibrary
         /// <param name="GroupId">The unix group id</param>
         /// <param name="CommandTimeout">The command timeout in milliseconds</param>
         public void Connect(IPAddress Address, int UserId, int GroupId, int CommandTimeout)
-        { Connect(Address, UserId, GroupId, CommandTimeout, System.Text.Encoding.ASCII, true); }
+        { Connect(Address, UserId, GroupId, CommandTimeout, System.Text.Encoding.ASCII, true, false); }
 
         /// <summary>
         /// Create a connection to a NFS Server
@@ -183,9 +187,9 @@ namespace NFSLibrary
         /// <param name="CommandTimeout">The command timeout in milliseconds</param>
         /// <param name="characterEncoding">Connection encoding</param>
         /// <param name="useSecurePort">Uses a local binding port less than 1024</param>
-        public void Connect(IPAddress Address, int UserId, int GroupId, int CommandTimeout, System.Text.Encoding characterEncoding, bool useSecurePort)
+        public void Connect(IPAddress Address, int UserId, int GroupId, int CommandTimeout, System.Text.Encoding characterEncoding, bool useSecurePort, bool useCache)
         {
-            this._nfsInterface.Connect(Address, UserId, GroupId, CommandTimeout, characterEncoding, useSecurePort);
+            this._nfsInterface.Connect(Address, UserId, GroupId, CommandTimeout, characterEncoding, useSecurePort, useCache);
             this._IsConnected = true;
         }
 
@@ -214,6 +218,8 @@ namespace NFSLibrary
         public void MountDevice(String DeviceName)
         {
             this._nfsInterface.MountDevice(DeviceName);
+            //cuz of NFS v4.1 we have to do this after session is created
+            this._blockSize = this._nfsInterface.GetBlockSize();
             this._IsMounted = true;
         }
 
@@ -233,7 +239,7 @@ namespace NFSLibrary
         /// <returns>A list of the items name</returns>
         public List<String> GetItemList(String DirectoryFullName)
         {
-            return GetItemList(DirectoryFullName, false);
+            return GetItemList(DirectoryFullName, true);  //changed to true cuz i don't need .. and .
         }
 
         /// <summary>
@@ -281,8 +287,8 @@ namespace NFSLibrary
         /// </summary>
         /// <param name="DirectoryFullName">Directory full name</param>
         public void CreateDirectory(String DirectoryFullName)
-        { 
-            CreateDirectory(DirectoryFullName, this._Mode); 
+        {
+            CreateDirectory(DirectoryFullName, this._Mode);
         }
 
         /// <summary>
@@ -299,8 +305,8 @@ namespace NFSLibrary
             if (!String.IsNullOrEmpty(ParentPath) &&
                 String.Compare(ParentPath, ".") != 0 &&
                 !FileExists(ParentPath))
-            { 
-                CreateDirectory(ParentPath); 
+            {
+                CreateDirectory(ParentPath);
             }
 
             this._nfsInterface.CreateDirectory(DirectoryFullName, Mode);
@@ -312,7 +318,7 @@ namespace NFSLibrary
         /// <param name="DirectoryFullName">Directory full name</param>
         public void DeleteDirectory(String DirectoryFullName)
         {
-            DeleteDirectory(DirectoryFullName, false);
+            DeleteDirectory(DirectoryFullName, true);
         }
 
         /// <summary>
@@ -338,7 +344,7 @@ namespace NFSLibrary
         }
 
         /// <summary>
-        /// Delete a file 
+        /// Delete a file
         /// </summary>
         /// <param name="FileFullName">File full name</param>
         public void DeleteFile(String FileFullName)
@@ -353,8 +359,8 @@ namespace NFSLibrary
         /// </summary>
         /// <param name="FileFullName">File full name</param>
         public void CreateFile(String FileFullName)
-        { 
-            CreateFile(FileFullName, this._Mode); 
+        {
+            CreateFile(FileFullName, this._Mode);
         }
 
         /// <summary>
@@ -433,21 +439,21 @@ namespace NFSLibrary
                 do
                 {
                     if (TotalRead < ReadLength)
-                    { 
-                        ReadLength = (int)TotalRead; 
+                    {
+                        ReadLength = (int)TotalRead;
                     }
 
                     ReadCount = this._nfsInterface.Read(SourceFileFullName, ReadOffset, ReadLength, ref ChunkBuffer);
 
                     if (this.DataEvent != null)
-                    { 
-                        this.DataEvent(this, new NFSEventArgs(ReadCount)); 
+                    {
+                        this.DataEvent(this, new NFSEventArgs(ReadCount));
                     }
 
                     OutputStream.Write(ChunkBuffer, 0, ReadCount);
 
                     TotalRead -= ReadCount; ReadOffset += ReadCount;
-                } 
+                }
                 while (ReadCount != 0);
 
                 OutputStream.Flush();
@@ -455,8 +461,8 @@ namespace NFSLibrary
                 CompleteIO();
             }
             else
-            { 
-                throw new NullReferenceException("OutputStream parameter must not be null!"); 
+            {
+                throw new NullReferenceException("OutputStream parameter must not be null!");
             }
         }
 
@@ -472,7 +478,7 @@ namespace NFSLibrary
         {
             /* This function is not suitable for large file reading.
              * Big file reading will cause OS paging creation and
-             * huge memory consumption. 
+             * huge memory consumption.
              */
             SourceFileFullName = CorrectPath(SourceFileFullName);
 
@@ -497,7 +503,7 @@ namespace NFSLibrary
                 Array.Copy(ChunkBuffer, 0, Buffer, CurrentPosition, ReadCount);
 
                 CurrentPosition += ReadCount;
-            } 
+            }
             while (ReadCount != 0);
 
             return CurrentPosition;
@@ -523,7 +529,7 @@ namespace NFSLibrary
                     ChunkCount = (UInt32)TotalLenght - CurrentPosition;
 
                 Byte[] ChunkBuffer = new Byte[ChunkCount];
-                int Size = _nfsInterface.Read(SourceFileFullName, Offset + CurrentPosition, (int) ChunkCount, ref ChunkBuffer);
+                int Size = _nfsInterface.Read(SourceFileFullName, Offset + CurrentPosition, (int)ChunkCount, ref ChunkBuffer);
 
                 if (DataEvent != null)
                     DataEvent(this, new NFSEventArgs((int)ChunkCount));
@@ -536,7 +542,6 @@ namespace NFSLibrary
 
                 Array.Copy(ChunkBuffer, 0, Buffer, CurrentPosition, Size);
                 CurrentPosition += (UInt32)Size;
-
             } while (CurrentPosition != TotalLenght);
         }
 
@@ -666,7 +671,7 @@ namespace NFSLibrary
 
                     Byte[] ChunkBuffer = new Byte[ChunkCount];
                     Array.Copy(Buffer, (int)CurrentPosition, ChunkBuffer, 0, (Int32)ChunkCount);
-                    Size = _nfsInterface.Write(DestinationFileFullName, Offset + CurrentPosition, (int) ChunkCount, ChunkBuffer);
+                    Size = _nfsInterface.Write(DestinationFileFullName, Offset + CurrentPosition, (int)ChunkCount, ChunkBuffer);
                     if (DataEvent != null)
                         DataEvent(this, new NFSEventArgs((int)ChunkCount));
                     if (Size == 0)
@@ -675,7 +680,6 @@ namespace NFSLibrary
                         return;
                     }
                     CurrentPosition += (UInt32)ChunkCount;
-
                 } while (CurrentPosition != TotalLenght);
             }
         }
@@ -817,6 +821,6 @@ namespace NFSLibrary
             return PathEntry;
         }
 
-        #endregion
+        #endregion Methods
     }
 }

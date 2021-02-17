@@ -6,6 +6,7 @@
 /**
  * A collection of constants used by the "NFSv2MountProtocol" ONC/RPC program.
  */
+
 namespace NFSLibrary.Protocols.V2.RPC.Mount
 {
     public class NFSv2MountProtocol
@@ -24,5 +25,6 @@ namespace NFSLibrary.Protocols.V2.RPC.Mount
         public const int MNTNAMLEN = 255;
         public const int FHSIZE = 32;
     }
+
     // End of NFSv2MountProtocol.cs
 }
