@@ -8,5 +8,6 @@
     <Product>NFS-Client</Product>
     <RepositoryUrl>https://github.com/SonnyX/NFS-Client</RepositoryUrl>
     <PackageTags>nfs nfs-client</PackageTags>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 </Project>
