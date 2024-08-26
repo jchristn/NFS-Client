@@ -13,10 +13,13 @@
 
     public static class Program
     {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
         /*
          * See https://www.dummies.com/article/technology/computers/operating-systems/linux/how-to-share-files-with-nfs-on-linux-systems-255851/
          * https://github.com/SonnyX/NFS-Client
          * https://github.com/nekoni/nekodrive
+         * https://github.com/DeCoRawr/NFSClient
          * https://code.google.com/archive/p/nekodrive/wikis/UseNFSDotNetLibrary.wiki
          * https://ubuntu.com/server/docs/network-file-system-nfs
          * https://www.hanewin.net/nfs-e.htm
@@ -25,9 +28,9 @@
          */
 
         private static bool _RunForever = true;
-        private static string _Hostname = "127.0.0.1";
+        private static string _Hostname = "192.168.254.129";
         private static NfsClient.NfsVersion _Version = NfsClient.NfsVersion.V3;
-        private static string _Share = "/c/users/joelc/downloads/test";
+        private static string _Share = "/srv";
 
         public static void Main(string[] args)
         {
@@ -97,9 +100,9 @@
 
         private static async Task ListShares()
         {
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            List<string> exports = nfs.GetExportedDevices();
+            NfsClient client = new NfsClient(_Version);
+            client.Connect(IPAddress.Parse(_Hostname));
+            List<string> exports = client.GetExportedDevices();
             if (exports != null && exports.Count > 0)
             {
                 foreach (var share in exports)
@@ -107,94 +110,173 @@
                     Console.WriteLine(share);
                 }
             }
-            nfs.Disconnect();
+            client.Disconnect();
+        }
+
+        private static async Task<List<string>> ListFilesInternal(string baseDir)
+        {
+            List<string> files = new List<string>();
+
+            if (String.IsNullOrEmpty(baseDir)) baseDir = ".";
+            else
+            {
+                if (!baseDir.EndsWith("/")) baseDir += "/";
+                if (!baseDir.EndsWith(".")) baseDir += ".";
+            }
+
+            try
+            {
+                NfsClient client = new NfsClient(_Version);
+                client.Connect(IPAddress.Parse(_Hostname));
+                client.MountDevice(_Share);
+
+                Console.WriteLine("Retrieving file list from base directory: " + baseDir);
+
+                foreach (string item in client.GetItemList(baseDir))
+                {
+                    NFSAttributes attrib = client.GetItemAttributes(item);
+                    if (attrib == null) continue;
+
+                    bool isDirectory = client.IsDirectory(item);
+                    if (isDirectory) continue;
+                    files.Add(item);
+                }
+
+                client.UnMountDevice();
+                client.Disconnect();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return files;
+        }
+
+        private static async Task<List<string>> ListDirectoriesInternal(string baseDir)
+        {
+            List<string> directories = new List<string>();
+
+            if (String.IsNullOrEmpty(baseDir)) baseDir = ".";
+            else
+            {
+                if (!baseDir.EndsWith("/")) baseDir += "/";
+                if (!baseDir.EndsWith(".")) baseDir += ".";
+            }
+
+            try
+            {
+                NfsClient client = new NfsClient(_Version);
+                client.Connect(IPAddress.Parse(_Hostname));
+                client.MountDevice(_Share);
+
+                Console.WriteLine("Retrieving directory list from base directory: " + baseDir);
+
+                foreach (string item in client.GetItemList(baseDir))
+                {
+                    NFSAttributes attrib = client.GetItemAttributes(item);
+                    if (attrib == null) continue;
+
+                    bool isDirectory = client.IsDirectory(item);
+                    if (!isDirectory) continue;
+                    directories.Add(item);
+                }
+
+                client.UnMountDevice();
+                client.Disconnect();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return directories;
         }
 
         private static async Task ListFiles()
         {
-            string baseDir = Inputty.GetString("Base directory:", null, true);
-
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            nfs.MountDevice(_Share);
-
-            if (String.IsNullOrEmpty(baseDir))
+            try
             {
-                foreach (string item in nfs.GetItemList("."))
+                string baseDir = Inputty.GetString("Base directory:", null, true);
+
+                List<string> files = await ListFilesInternal(baseDir);
+                List<string> directories = await ListDirectoriesInternal(baseDir);
+
+                Console.WriteLine("Directories:");
+                if (directories != null && directories.Count > 0)
+                    foreach (string directory in directories) Console.WriteLine("  " + directory);
+                else
+                    Console.WriteLine("  (none)");
+
+                Console.WriteLine("Files:");
+                if (files != null && files.Count > 0)
                 {
-                    NFSAttributes attrib = nfs.GetItemAttributes(item);
-                    if (attrib == null)
-                    {
-                        Console.WriteLine("Attributes not found for " + item);
-                        continue;
-                    }
-                    Console.WriteLine(item + " " + attrib.CreateDateTime.ToString() + " " + attrib.Size);
+                    foreach (string file in files)
+                        Console.WriteLine("  " + file);
                 }
+                else
+                    Console.WriteLine("  (none)");
             }
-            else
+            catch (Exception e)
             {
-                foreach (string item in nfs.GetItemList(baseDir))
-                {
-                    string path = baseDir;
-                    if (!path.StartsWith("/")) path += "/";
-                    if (!path.EndsWith("/")) path += "/";
-
-                    NFSAttributes attrib = nfs.GetItemAttributes(path + item);
-                    if (attrib == null)
-                    {
-                        Console.WriteLine("Attributes not found for " + item);
-                        continue;
-                    }
-                    Console.WriteLine(item + " " + attrib.CreateDateTime.ToString() + " " + attrib.Size);
-                }
+                Console.WriteLine(e.ToString());
             }
-
-            nfs.UnMountDevice();
-            nfs.Disconnect();
         }
 
         private static async Task WalkDirectory()
         {
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            nfs.MountDevice(_Share);
+            NfsClient client = new NfsClient(_Version);
+            client.Connect(IPAddress.Parse(_Hostname));
+            client.MountDevice(_Share);
 
-            await WalkDirectoryInternal(nfs, ".", "", 0);
+            await WalkDirectoryInternal(client, ".", "", 0);
 
-            nfs.UnMountDevice();
-            nfs.Disconnect();
+            client.UnMountDevice();
+            client.Disconnect();
         }
 
         private static async Task WalkDirectoryInternal(NfsClient client, string item, string path, int spacing)
         {
-            string spaces = "";
-            for (int i = 0; i < spacing; i++) spaces += " ";
-            Console.WriteLine(spaces + "| Walking directory " + item);
-
-            List<string> items = client.GetItemList(item, true);
-            Console.WriteLine(spaces + "  | Read " + items.Count + " items");
-
-            foreach (string curr in items)
+            try
             {
-                NFSAttributes attrib = client.GetItemAttributes(path + curr);
-                if (attrib == null)
+                string spaces = "";
+                for (int i = 0; i < spacing; i++) spaces += " ";
+                Console.WriteLine(spaces + "| Walking directory " + item);
+
+                string basePath = "";
+                if (!String.IsNullOrEmpty(path)) basePath = path + "/";
+
+                List<string> items = client.GetItemList(basePath + item, true);
+                Console.WriteLine(spaces + "| Read " + items.Count + " items");
+
+                foreach (string curr in items)
                 {
-                    Console.WriteLine(spaces + "    | Unable to get attributes for " + curr);
-                    continue;
+                    bool isDir = client.IsDirectory(curr);
+
+                    if (!isDir)
+                    {
+                        NFSAttributes attrib = client.GetItemAttributes(path + curr);
+                        if (attrib == null)
+                        {
+                            Console.WriteLine(spaces + "  | Unable to get attributes for " + curr);
+                            continue;
+                        }
+
+                        Console.WriteLine(spaces + "  | " + (path + curr) + " " + attrib.Size + " bytes");
+                    }
+                    else
+                    {
+                        Console.WriteLine(spaces + "  | " + curr + " (dir)");
+                        // await WalkDirectoryInternal(client, (curr + "/."), (path + "/" + curr), spacing + 2);
+                    }
                 }
 
-                if (client.IsDirectory(curr))
-                {
-                    Console.WriteLine(spaces + "    | " + curr + " (dir)");
-                    await WalkDirectoryInternal(client, curr, (path + "/" + curr + "/"), spacing + 2);
-                }
-                else
-                {
-                    Console.WriteLine(spaces + "    | " + (path + curr) + " " + attrib.Size + " bytes");
-                }
+                Console.WriteLine("");
             }
-
-            Console.WriteLine("");
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         private static async Task ReadFile()
@@ -202,12 +284,12 @@
             string file = Inputty.GetString("Filename:", null, true);
             if (String.IsNullOrEmpty(file)) return;
 
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            nfs.MountDevice(_Share);
+            NfsClient client = new NfsClient(_Version);
+            client.Connect(IPAddress.Parse(_Hostname));
+            client.MountDevice(_Share);
 
             Stream stream = new MemoryStream();
-            nfs.Read(file, ref stream);
+            client.Read(file, ref stream);
 
             if (stream != null)
             {
@@ -232,13 +314,13 @@
                 }
             }
 
-            nfs.UnMountDevice();
+            client.UnMountDevice();
 
             stream.Close();
             stream.Dispose();
             stream = null;
 
-            nfs.Disconnect();
+            client.Disconnect();
         }
 
         private static async Task WriteFile()
@@ -249,20 +331,20 @@
             string data = Inputty.GetString("Data    :", null, true);
             if (String.IsNullOrEmpty(data)) return;
 
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            nfs.MountDevice(_Share);
+            NfsClient client = new NfsClient(_Version);
+            client.Connect(IPAddress.Parse(_Hostname));
+            client.MountDevice(_Share);
 
             using (MemoryStream stream = new MemoryStream())
             {
                 await stream.WriteAsync(Encoding.UTF8.GetBytes(data));
                 stream.Seek(0, SeekOrigin.Begin);
-                nfs.Write(file, stream);
+                client.Write(file, stream);
             }
 
-            nfs.UnMountDevice();
+            client.UnMountDevice();
 
-            nfs.Disconnect();
+            client.Disconnect();
         }
 
         private static async Task DeleteFile()
@@ -270,13 +352,15 @@
             string file = Inputty.GetString("Filename:", null, true);
             if (String.IsNullOrEmpty(file)) return;
 
-            NfsClient nfs = new NfsClient(_Version);
-            nfs.Connect(IPAddress.Parse(_Hostname));
-            nfs.MountDevice(_Share);
-            nfs.DeleteFile(file);
-            nfs.UnMountDevice();
+            NfsClient client = new NfsClient(_Version);
+            client.Connect(IPAddress.Parse(_Hostname));
+            client.MountDevice(_Share);
+            client.DeleteFile(file);
+            client.UnMountDevice();
 
-            nfs.Disconnect();
+            client.Disconnect();
         }
+
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 }
