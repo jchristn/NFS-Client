@@ -407,7 +407,7 @@ namespace org.acplt.oncrpc
                             {
                                 replyHeader.xdrDecode(receivingXdr);
                             }
-                            catch (org.acplt.oncrpc.OncRpcException e)
+                            catch (org.acplt.oncrpc.OncRpcException)
                             {
                                 //
                                 // ** SF bug #1262106 **
@@ -421,7 +421,7 @@ namespace org.acplt.oncrpc
 
                                 // continue;
 
-                                throw (e);
+                                throw;
                             }
                             //
                             // Only deserialize the result, if the reply matches the
@@ -462,7 +462,7 @@ namespace org.acplt.oncrpc
                         {
                             result.xdrDecode(receivingXdr);
                         }
-                        catch (org.acplt.oncrpc.OncRpcException e)
+                        catch (org.acplt.oncrpc.OncRpcException)
                         {
                             //
                             // ** SF bug #1262106 **
@@ -474,7 +474,7 @@ namespace org.acplt.oncrpc
                             //
                             receivingXdr.endDecoding();
 
-                            throw (e);
+                            throw;
                         }
                         //
                         // Free pending resources of buffer and exit the call loop,

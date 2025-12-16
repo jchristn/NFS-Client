@@ -356,7 +356,7 @@ namespace org.acplt.oncrpc
                                     {
                                         replyHeader.xdrDecode(receivingXdr);
                                     }
-                                    catch (org.acplt.oncrpc.OncRpcException e)
+                                    catch (org.acplt.oncrpc.OncRpcException)
                                     {
                                         //
                                         // ** SF bug #1262106 **
@@ -367,7 +367,7 @@ namespace org.acplt.oncrpc
                                         // from a clean state.
                                         //
                                         receivingXdr.endDecoding();
-                                        throw (e);
+                                        throw;
                                     }
                                     //
                                     // Only deserialize the result, if the reply matches the call
@@ -413,7 +413,7 @@ namespace org.acplt.oncrpc
                                         {
                                             result.xdrDecode(receivingXdr);
                                         }
-                                        catch (OncRpcException e)
+                                        catch (OncRpcException)
                                         {
                                             //
                                             // ** SF bug #1262106 **
@@ -424,7 +424,7 @@ namespace org.acplt.oncrpc
                                             // from a clean state.
                                             //
                                             receivingXdr.endDecoding();
-                                            throw (e);
+                                            throw;
                                         }
                                         //
                                         // Free pending resources of buffer and exit the call loop,
@@ -506,7 +506,7 @@ namespace org.acplt.oncrpc
                                 //
                                 if (e.getReason() != org.acplt.oncrpc.OncRpcException.RPC_WRONGMESSAGE)
                                 {
-                                    throw (e);
+                                    throw;
                                 }
                             }
                             //
