@@ -15,7 +15,7 @@ jobs:
         id: publish_nuget
         uses: rohith/publish-nuget@v2
         with:
-          PROJECT_FILE_PATH: NFSLibrary/NFSLibrary.csproj
+          PROJECT_FILE_PATH: src/NFSLibrary/NFSLibrary.csproj
           PACKAGE_NAME: NFS-Client
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           INCLUDE_SYMBOLS: true
